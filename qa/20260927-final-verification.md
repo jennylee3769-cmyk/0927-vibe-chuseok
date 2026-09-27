@@ -12,4 +12,6 @@
 - 최종 수업 상태: 1번 슬라이드·청중 잠금·PDF 허용
 - 정적 검사: `firebase-config.js`, `firebase-sync.js` 구문 검사 통과
 - Git 검사: `git diff --check` 통과, 줄 끝 변환 안내만 확인
-
+- GitHub: `main` 브랜치 커밋·푸시 완료
+- Vercel: 프로덕션 배포 `Ready`, 공개 경로 6개 HTTP 200 확인
+- 공개 동기화: 강사 1번 → 2번 이동 시 독립 배포 주소의 청중 화면 자동 이동 확인
