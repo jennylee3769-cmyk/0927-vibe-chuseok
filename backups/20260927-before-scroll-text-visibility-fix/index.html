@@ -131,16 +131,15 @@ body{overflow-x:clip;background-color:#fff;background-image:linear-gradient(rgba
 body::before{content:'MAKE IT · DRAW IT · SHIP IT ·';position:fixed;z-index:30;right:-58px;top:92px;width:280px;padding:9px 12px;background:#111;color:#fff;border:3px solid #fff;box-shadow:5px 5px 0 var(--acid);font-size:12px;font-weight:900;letter-spacing:.08em;transform:rotate(11deg);pointer-events:none}
 .hero{position:relative;isolation:isolate;background:var(--acid);border-bottom:5px solid #111;overflow:hidden}
 .hero::before{content:'CHUSEOK\A VIDEO LAB';white-space:pre;position:absolute;right:-.03em;bottom:-.2em;z-index:-1;color:transparent;-webkit-text-stroke:2px rgba(17,17,17,.18);font-size:clamp(82px,17vw,230px);font-weight:950;line-height:.7;letter-spacing:-.09em;transform:rotate(-5deg)}
-.hero h1{max-width:1000px;font-size:clamp(48px,8vw,116px);line-height:.88;letter-spacing:-.065em;text-transform:uppercase;color:#111!important;text-shadow:none!important;transform:none}
+.hero h1{max-width:1000px;font-size:clamp(48px,8vw,116px);line-height:.83;letter-spacing:-.075em;text-transform:uppercase;text-shadow:5px 5px 0 #fff;transform:rotate(-1.5deg)}
 .hero .eyebrow,.eyebrow{display:inline-flex;background:#111!important;color:#fff!important;border:3px solid #111;padding:7px 12px;box-shadow:4px 4px 0 #fff;transform:rotate(-2deg);font-weight:950;letter-spacing:.08em}
 .hero .lead{display:inline-block;background:#fff;border:4px solid #111;padding:8px 14px;box-shadow:var(--hard);font-weight:850;transform:rotate(1deg)}
 .hero .chips span,.btn,.pbtn,.download{border:3px solid #111!important;border-radius:0!important;box-shadow:4px 4px 0 #111!important;font-weight:900!important;text-transform:uppercase;transition:transform .16s ease,box-shadow .16s ease!important}
 .btn:hover,.pbtn:hover,.download:hover{transform:translate(3px,3px) rotate(-1deg)!important;box-shadow:1px 1px 0 #111!important}
-main section{position:relative;margin-block:clamp(56px,9vw,120px);background:#fff;color:#111;border:4px solid #111;box-shadow:var(--hard-lg);padding:clamp(24px,5vw,64px)!important;opacity:1!important;visibility:visible!important}
+main section{position:relative;margin-block:clamp(56px,9vw,120px);background:#fff;border:4px solid #111;box-shadow:var(--hard-lg);padding:clamp(24px,5vw,64px)!important}
 main section:nth-child(even){transform:rotate(.45deg)}main section:nth-child(odd){transform:rotate(-.35deg)}
 main section::after{content:attr(data-chaos);position:absolute;right:18px;top:-18px;background:var(--acid);border:3px solid #111;padding:5px 10px;font-size:12px;font-weight:950;transform:rotate(4deg)}
 section h2{font-size:clamp(38px,6vw,76px)!important;line-height:.88!important;letter-spacing:-.065em!important;text-transform:uppercase}
-main section h2,main section h3,main section .sec-kicker{color:#111!important;opacity:1!important;text-shadow:none!important}
 .card,.resource,.pitem,.enter-card,.profile{border:3px solid #111!important;border-radius:0!important;box-shadow:6px 6px 0 #111!important;transition:transform .2s ease,box-shadow .2s ease!important}
 .card:nth-child(2n),.resource:nth-child(2n),.pitem:nth-child(2n){transform:rotate(1deg)}
 .card:nth-child(2n+1),.resource:nth-child(2n+1),.pitem:nth-child(2n+1){transform:rotate(-1deg)}
@@ -364,10 +363,10 @@ footer{background:#111;color:#fff;border-top:8px solid var(--acid)}
   gsap.registerPlugin(ScrollTrigger);
   var tl=gsap.timeline({defaults:{duration:.72,ease:'power3.out'}});
   tl.from('.hero .eyebrow',{y:-28,rotation:-8,autoAlpha:0})
-    .from('.hero h1',{y:60,autoAlpha:0},'-=.42')
+    .from('.hero h1',{y:60,rotation:3,autoAlpha:0},'-=.42')
     .from('.hero .lead,.hero .chips,.hero .actions',{y:28,autoAlpha:0,stagger:.1},'-=.38');
   gsap.to('.chaos-progress',{scaleX:1,ease:'none',scrollTrigger:{start:'top top',end:'max',scrub:true}});
-  ScrollTrigger.batch('main section',{start:'top 88%',once:true,onEnter:function(items){gsap.fromTo(items,{y:70,rotation:function(i){return i%2?-2:2}},{y:0,rotation:function(i,el){return el.matches(':nth-child(even)') ? .45 : -.35},duration:.75,stagger:.1,ease:'power3.out',clearProps:'opacity,visibility'});}});
+  ScrollTrigger.batch('main section',{start:'top 88%',once:true,onEnter:function(items){gsap.fromTo(items,{y:70,rotation:function(i){return i%2?-2:2},autoAlpha:0},{y:0,rotation:function(i,el){return el.matches(':nth-child(even)') ? .45 : -.35},autoAlpha:1,duration:.75,stagger:.1,ease:'power3.out'});}});
   ScrollTrigger.batch('.card,.resource,.pitem',{start:'top 92%',once:true,onEnter:function(items){gsap.from(items,{scale:.88,rotation:function(i){return i%2?-5:5},autoAlpha:0,duration:.55,stagger:.06,ease:'back.out(1.35)'});}});
 })();
 </script>

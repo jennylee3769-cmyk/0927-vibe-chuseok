@@ -123,46 +123,8 @@ footer nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 .3
 
 @media (prefers-reduced-motion:reduce){ .entry{transition:none} .entry:hover{transform:none} }
 </style>
-<style id="genz-maximalism">
-/* Gen Z 카오스: 검정·흰색·머스타드 안에서 타이포와 형태만 충돌 */
-:root{--acid:#F6C744;--hard:5px 5px 0 #111;--hard-lg:10px 10px 0 #111}
-html{scroll-behavior:smooth;scrollbar-color:#111 var(--acid)}
-body{overflow-x:clip;background-color:#fff;background-image:linear-gradient(rgba(17,17,17,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.08) 1px,transparent 1px);background-size:24px 24px}
-body::before{content:'MAKE IT · DRAW IT · SHIP IT ·';position:fixed;z-index:30;right:-58px;top:92px;width:280px;padding:9px 12px;background:#111;color:#fff;border:3px solid #fff;box-shadow:5px 5px 0 var(--acid);font-size:12px;font-weight:900;letter-spacing:.08em;transform:rotate(11deg);pointer-events:none}
-.hero{position:relative;isolation:isolate;background:var(--acid);border-bottom:5px solid #111;overflow:hidden}
-.hero::before{content:'CHUSEOK\A VIDEO LAB';white-space:pre;position:absolute;right:-.03em;bottom:-.2em;z-index:-1;color:transparent;-webkit-text-stroke:2px rgba(17,17,17,.18);font-size:clamp(82px,17vw,230px);font-weight:950;line-height:.7;letter-spacing:-.09em;transform:rotate(-5deg)}
-.hero h1{max-width:1000px;font-size:clamp(48px,8vw,116px);line-height:.88;letter-spacing:-.065em;text-transform:uppercase;color:#111!important;text-shadow:none!important;transform:none}
-.hero .eyebrow,.eyebrow{display:inline-flex;background:#111!important;color:#fff!important;border:3px solid #111;padding:7px 12px;box-shadow:4px 4px 0 #fff;transform:rotate(-2deg);font-weight:950;letter-spacing:.08em}
-.hero .lead{display:inline-block;background:#fff;border:4px solid #111;padding:8px 14px;box-shadow:var(--hard);font-weight:850;transform:rotate(1deg)}
-.hero .chips span,.btn,.pbtn,.download{border:3px solid #111!important;border-radius:0!important;box-shadow:4px 4px 0 #111!important;font-weight:900!important;text-transform:uppercase;transition:transform .16s ease,box-shadow .16s ease!important}
-.btn:hover,.pbtn:hover,.download:hover{transform:translate(3px,3px) rotate(-1deg)!important;box-shadow:1px 1px 0 #111!important}
-main section{position:relative;margin-block:clamp(56px,9vw,120px);background:#fff;color:#111;border:4px solid #111;box-shadow:var(--hard-lg);padding:clamp(24px,5vw,64px)!important;opacity:1!important;visibility:visible!important}
-main section:nth-child(even){transform:rotate(.45deg)}main section:nth-child(odd){transform:rotate(-.35deg)}
-main section::after{content:attr(data-chaos);position:absolute;right:18px;top:-18px;background:var(--acid);border:3px solid #111;padding:5px 10px;font-size:12px;font-weight:950;transform:rotate(4deg)}
-section h2{font-size:clamp(38px,6vw,76px)!important;line-height:.88!important;letter-spacing:-.065em!important;text-transform:uppercase}
-main section h2,main section h3,main section .sec-kicker{color:#111!important;opacity:1!important;text-shadow:none!important}
-.card,.resource,.pitem,.enter-card,.profile{border:3px solid #111!important;border-radius:0!important;box-shadow:6px 6px 0 #111!important;transition:transform .2s ease,box-shadow .2s ease!important}
-.card:nth-child(2n),.resource:nth-child(2n),.pitem:nth-child(2n){transform:rotate(1deg)}
-.card:nth-child(2n+1),.resource:nth-child(2n+1),.pitem:nth-child(2n+1){transform:rotate(-1deg)}
-.card:hover,.resource:hover,.pitem:hover{transform:translateY(-6px) rotate(0)!important;box-shadow:10px 10px 0 var(--acid)!important}
-.n,.tag,.pitem::before{background:#111!important;color:#fff!important;border-radius:0!important}
-.profile{display:grid!important;grid-template-columns:minmax(230px,38%) 1fr;align-items:stretch!important;gap:clamp(22px,4vw,54px)!important;padding:0!important;overflow:visible;background:#fff}
-.profile-photo{position:relative;min-height:410px;background:var(--acid);border-right:4px solid #111;overflow:hidden;isolation:isolate}
-.profile-photo::before{content:'AI CLASS';position:absolute;z-index:2;left:14px;top:14px;background:#111;color:#fff;border:3px solid #fff;padding:7px 11px;font-size:12px;font-weight:950;letter-spacing:.12em;transform:rotate(-3deg)}
-.profile-photo::after{content:'JENNY LEE';position:absolute;z-index:2;right:-12px;bottom:22px;background:var(--acid);border:3px solid #111;box-shadow:4px 4px 0 #111;padding:7px 14px;font-size:14px;font-weight:950;letter-spacing:.08em;transform:rotate(-5deg)}
-.profile-photo img{display:block;width:100%;height:100%;min-height:410px;object-fit:cover;object-position:50% 18%;filter:contrast(1.03) saturate(.96);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-.profile:hover .profile-photo img{transform:scale(1.035)}
-.profile-copy{align-self:center;padding:clamp(26px,5vw,62px) clamp(24px,5vw,58px) clamp(26px,5vw,62px) 0}
-.profile .name{font-size:clamp(36px,5vw,68px)!important;line-height:.9;letter-spacing:-.06em;text-transform:uppercase}.profile .role{display:inline-block;margin-top:12px;background:var(--acid);border:3px solid #111;padding:6px 10px;color:#111!important;font-weight:900!important;transform:rotate(1deg)}
-.profile ul{margin-top:24px!important;font-size:clamp(15px,1.5vw,19px)!important;line-height:1.55;gap:9px!important}.profile li::marker{color:var(--acid)}
-footer{background:#111;color:#fff;border-top:8px solid var(--acid)}
-.chaos-progress{position:fixed;z-index:80;left:0;top:0;width:100%;height:7px;background:#111;transform:scaleX(0);transform-origin:left center;pointer-events:none}
-@media(max-width:640px){body::before{display:none}.hero h1{font-size:clamp(44px,14vw,72px)}main section{transform:none!important;margin-inline:8px;padding:24px 18px!important}.card,.resource,.pitem{transform:none!important}section h2{font-size:42px!important}.profile{grid-template-columns:1fr!important}.profile-photo{min-height:430px;border-right:0;border-bottom:4px solid #111}.profile-photo img{min-height:430px;object-position:50% 16%}.profile-copy{padding:28px 22px 34px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.resource,.pitem,.btn,.pbtn,.download{transition:none!important}.chaos-progress{display:none}}
-</style>
 </head>
 <body>
-<div class="chaos-progress" aria-hidden="true"></div>
 <a class="skip" href="#main">본문 바로가기</a>
 
 <header class="hero">
@@ -212,10 +174,8 @@ footer{background:#111;color:#fff;border-top:8px solid var(--acid)}
       <div class="sec-kicker">강사 소개</div>
       <h2 id="insTitle">이정임 강사</h2>
       <div class="profile">
-        <figure class="profile-photo">
-          <img src="assets/lee-jeongim-profile.png" alt="밝게 미소 짓는 AI Class 이정임 강사" width="1122" height="1402" loading="lazy">
-        </figure>
-        <div class="profile-copy">
+        <div class="avatar" aria-hidden="true">이</div>
+        <div>
           <div class="name">이정임</div>
           <div class="role">AI Class · 강사</div>
           <ul>
@@ -353,22 +313,6 @@ footer{background:#111;color:#fff;border-top:8px solid var(--acid)}
     }).join('\n');
     download('실습프롬프트_' + PROMPTS.length + '종.txt', out);
   });
-})();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-<script>
-(function(){
-  document.querySelectorAll('main section').forEach(function(section,i){section.dataset.chaos='0'+(i+1)+' / LIVE';});
-  if(!window.gsap||!window.ScrollTrigger||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  gsap.registerPlugin(ScrollTrigger);
-  var tl=gsap.timeline({defaults:{duration:.72,ease:'power3.out'}});
-  tl.from('.hero .eyebrow',{y:-28,rotation:-8,autoAlpha:0})
-    .from('.hero h1',{y:60,autoAlpha:0},'-=.42')
-    .from('.hero .lead,.hero .chips,.hero .actions',{y:28,autoAlpha:0,stagger:.1},'-=.38');
-  gsap.to('.chaos-progress',{scaleX:1,ease:'none',scrollTrigger:{start:'top top',end:'max',scrub:true}});
-  ScrollTrigger.batch('main section',{start:'top 88%',once:true,onEnter:function(items){gsap.fromTo(items,{y:70,rotation:function(i){return i%2?-2:2}},{y:0,rotation:function(i,el){return el.matches(':nth-child(even)') ? .45 : -.35},duration:.75,stagger:.1,ease:'power3.out',clearProps:'opacity,visibility'});}});
-  ScrollTrigger.batch('.card,.resource,.pitem',{start:'top 92%',once:true,onEnter:function(items){gsap.from(items,{scale:.88,rotation:function(i){return i%2?-5:5},autoAlpha:0,duration:.55,stagger:.06,ease:'back.out(1.35)'});}});
 })();
 </script>
 </body>
