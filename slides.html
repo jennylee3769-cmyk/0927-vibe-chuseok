@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<!--
+  웹슬라이드 스타터 · 두온교육 「강의 사이트 제작 노하우」 참가자 키트
+  먼저 바꿀 것
+  1) 아래 스크립트의 LS = 'mykit_' → 내 강의 고유 접두사 (예: 'ai0927_')
+     접두사가 겹치면 다른 강의 사이트와 저장값이 섞임
+  2) <title>, description, 표지·마침 슬라이드의 [ ] 자리
+  3) 슬라이드 추가·삭제 시 aria-label 번호와 주석 번호 함께 재정렬 (AGENTS.md 참고)
+  외부 파일 없음 · 백엔드 없음 · 이 파일 하나로 동작
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>[강의 제목] 슬라이드</title>
+<meta name="description" content="[강의 제목] 수업 슬라이드 · [날짜] · 강사 [이름]">
+<meta name="theme-color" content="#111111">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --ink:#111111; --sub:#555555; --mute:#767676;
+  --line:#E3E3E3;
+  --slide-bg:#F4F4F3; --card:#FFFFFF;
+  --accent:#F6C744; --accent-sub:#3A3000;
+  --shadow:0 .45cqi 1.4cqi rgba(0,0,0,.09), 0 .1cqi .3cqi rgba(0,0,0,.07);
+  --shadow-lg:0 .8cqi 2.4cqi rgba(0,0,0,.13), 0 .18cqi .45cqi rgba(0,0,0,.08);
+  --alert:#D32F2F;
+  --nav-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:#0E0E0E;color:var(--ink);
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
+  word-break:keep-all;overflow-wrap:anywhere;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:inherit;text-wrap:balance;letter-spacing:-.01em}
+p,li{text-wrap:pretty}
+button{font-family:inherit}
+
+/* 16:9 무대 · 모든 크기를 무대 폭 기준 cqi로 → 창 크기와 무관하게 같은 비율 */
+#stage{position:fixed;left:50%;top:calc((100vh - var(--nav-h)) / 2);transform:translate(-50%,-50%);
+  width:min(100vw, calc((100vh - var(--nav-h)) * 16 / 9));aspect-ratio:16/9;
+  container-type:inline-size;background:var(--slide-bg);overflow:hidden}
+
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:4.6cqi 6cqi;background:var(--slide-bg);color:var(--ink)}
+.slide.active{display:flex}
+.slide-content{flex:1;display:flex;flex-direction:column;justify-content:center;gap:1.8cqi;min-height:0}
+
+/* 타이포 (단위 cqi) */
+.kicker{display:flex;align-items:center;gap:1cqi;font-size:1.6cqi;font-weight:800;letter-spacing:.06em;color:var(--ink)}
+.kicker::before{content:'';flex:0 0 auto;width:2.4cqi;height:.36cqi;background:currentColor}
+h1{font-size:6cqi;font-weight:900;line-height:1.22}
+h2{font-size:3.9cqi;font-weight:800;line-height:1.28}
+.lede{font-size:2.2cqi;color:var(--sub);line-height:1.6}
+
+/* 표지·마침: 머스타드 옐로 / 휴식: 검정 반전 */
+.title-slide{background:var(--accent);color:#111111}
+.title-slide .slide-content{align-items:center;text-align:center}
+.title-slide .kicker{color:#111111}
+.title-slide h1::after{content:'';display:block;width:6cqi;height:.4cqi;background:#111111;margin:2.4cqi auto 0}
+.title-slide .lede{color:var(--accent-sub)}
+.slide.dark{background:#111111;color:#FFFFFF}
+.slide.dark .kicker{color:#FFFFFF}
+.slide.dark .lede{color:#BDBDBD}
+.meta-row{display:flex;justify-content:center;gap:1.2cqi;flex-wrap:wrap;font-size:1.7cqi}
+.meta-row span{border:.18cqi solid #111111;border-radius:99cqi;padding:.7cqi 2cqi;color:#111111;font-weight:600}
+
+/* 불릿: 한 줄씩 그림자 박스 */
+.bullets{display:flex;flex-direction:column;gap:1.2cqi}
+.bullets li{list-style:none;display:flex;gap:1.4cqi;align-items:flex-start;font-size:2.25cqi;line-height:1.55;
+  background:var(--card);box-shadow:var(--shadow);border-radius:1cqi;padding:1.25cqi 2cqi}
+.bullets li::before{content:'';flex:0 0 auto;width:.75cqi;height:.75cqi;background:var(--ink);margin-top:1.36cqi}
+.slide-content a{color:inherit;text-underline-offset:.3em;text-decoration-thickness:.15em}
+
+/* 카드 */
+.card-grid{display:grid;gap:1.8cqi}
+.c2{grid-template-columns:repeat(2,1fr)}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border-radius:1.2cqi;box-shadow:var(--shadow-lg);padding:2.2cqi;
+  display:flex;flex-direction:column;gap:.8cqi;min-width:0}
+.card .n{font-size:3.4cqi;font-weight:900;line-height:1;color:var(--ink)}
+.card .t{font-size:2.3cqi;font-weight:800}
+.card .d{font-size:1.8cqi;color:var(--sub);line-height:1.5}
+/* 색으로만 구분 금지: 아쉬운 예 = 점선 + ✕, 좋은 예 = 굵은 검정 막대 + ✓ */
+.card.bad{background:#FAFAFA;box-shadow:none;border:.2cqi dashed #9E9E9E}
+.card.bad .t{color:var(--sub)}
+.card.bad .t::before{content:'✕  '}
+.card.good{border-left:.7cqi solid var(--ink)}
+.card.good .t::before{content:'✓  '}
+
+/* 표 */
+table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:1.85cqi;line-height:1.35;
+  background:var(--card);box-shadow:var(--shadow-lg);border-radius:1.2cqi;overflow:hidden}
+table.tbl th, table.tbl td{padding:.8cqi 1.6cqi;text-align:left;border-bottom:.12cqi solid var(--line)}
+table.tbl tbody tr:last-child td{border-bottom:none}
+table.tbl th{background:#111111;color:#FFFFFF;font-weight:800}
+table.tbl tr.today td{font-weight:800}
+table.tbl tr.today td:first-child{box-shadow:inset .55cqi 0 0 #111111}
+table.tbl td:first-child, table.tbl th:first-child{white-space:nowrap}
+table.tbl td:first-child{color:var(--sub)}
+
+/* 프롬프트 카드: 검정 박스 + 오른쪽 위 복사 버튼 */
+.prompt-card{position:relative;background:#111111;color:#F2F2F2;border-radius:1.2cqi;box-shadow:var(--shadow-lg);
+  padding:2cqi 2.4cqi;display:flex;flex-direction:column;gap:1cqi}
+.prompt-card .label{font-size:1.5cqi;font-weight:800;letter-spacing:.06em;color:#BDBDBD;padding-right:14cqi}
+.prompt-card blockquote{font-size:2cqi;line-height:1.6;color:#FFFFFF;border-left:.3cqi solid #666666;padding-left:1.6cqi;
+  font-style:normal;white-space:pre-wrap}
+.copy-btn{position:absolute;top:1.5cqi;right:1.6cqi;font-size:1.5cqi;font-weight:800;
+  padding:.7cqi 1.8cqi;border-radius:99cqi;border:none;background:#FFFFFF;color:#111111;cursor:pointer;min-height:44px;min-width:44px}
+.copy-btn:hover, .copy-btn.copied{background:#E2E2E2}
+.copy-btn:focus-visible{outline:.25cqi solid #FFFFFF;outline-offset:.25cqi}
+
+/* 타이머: 클릭 시작/일시정지 · 더블클릭 또는 R 키 리셋 */
+.timer-chip{display:inline-flex;align-items:center;gap:1cqi;align-self:flex-start;cursor:pointer;user-select:none;
+  background:var(--card);box-shadow:var(--shadow);border:.18cqi solid var(--ink);border-radius:99cqi;min-height:44px;
+  padding:.9cqi 2.2cqi;font-size:2cqi;font-weight:800;color:var(--ink)}
+.timer-chip .time{font-variant-numeric:tabular-nums;min-width:3.4em;text-align:center}
+.timer-chip.running{background:#111111;color:#FFFFFF}
+.timer-chip.warn .time{color:var(--alert)}
+.timer-chip.running.warn .time{color:#FF8A80}
+.timer-chip .state{font-size:1.4cqi;font-weight:700;opacity:.8}
+.timer-chip:focus-visible, .break-big:focus-visible{outline:.3cqi solid currentColor;outline-offset:.4cqi}
+.break-big{cursor:pointer;user-select:none;text-align:center;font-variant-numeric:tabular-nums;background:none;border:none;
+  font-size:16cqi;font-weight:900;line-height:1.05;color:#FFFFFF;min-height:44px;border-radius:1cqi}
+.break-big.warn{color:#FF8A80}
+
+/* 하단 네비 */
+#nav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-h);background:#0E0E0E;border-top:1px solid #222;
+  display:flex;align-items:center;gap:8px;padding:0 14px;color:#EEEEEE;font-size:14px;z-index:200}
+#nav button, #nav a{background:#1F1F1F;color:#EEEEEE;border:1px solid #2E2E2E;border-radius:8px;
+  height:44px;min-width:44px;padding:0 14px;font-size:14px;font-weight:700;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#nav button:hover, #nav a:hover{background:#2C2C2C}
+#nav button:disabled{opacity:.35;cursor:default}
+#nav button:focus-visible, #nav a:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+#nav .grow{flex:1}
+#counter{font-variant-numeric:tabular-nums;font-weight:800;min-width:5.5em;text-align:center}
+.hint{color:#9A9A9A;font-size:12.5px}
+#progress{position:fixed;left:0;bottom:var(--nav-h);height:3px;background:#FFFFFF;width:0;z-index:201;transition:width .2s}
+@media (max-width:760px){ #nav .hide-sm{display:none} }
+
+/* 전체보기: 실제 축소판 */
+.grid-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,10,10,.97);display:none;overflow:auto;padding:22px 22px 40px}
+.grid-overlay.open{display:block}
+.grid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.grid-head h2{color:#FFFFFF;font-size:20px;font-weight:800}
+.grid-head button{background:#1F1F1F;color:#EEEEEE;border:1px solid #2E2E2E;border-radius:8px;height:44px;padding:0 16px;
+  font-size:14px;font-weight:700;cursor:pointer}
+.grid-head button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.grid-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.mini{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;cursor:pointer;
+  outline:3px solid transparent;outline-offset:2px;background:var(--slide-bg)}
+.mini:hover, .mini:focus-visible, .mini.current{outline-color:#FFFFFF}
+/* 960px 기준으로 그린 뒤 축소 · 240px에 직접 그리면 브라우저 최소 글꼴 크기에 걸려 넘침 */
+.mini-inner{position:absolute;left:0;top:0;width:960px;height:540px;container-type:inline-size;
+  transform-origin:0 0;pointer-events:none;background:var(--slide-bg)}
+.mini-inner .slide{display:flex}
+.mini-num{position:absolute;right:6px;top:6px;background:rgba(0,0,0,.78);color:#FFFFFF;font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:99px;z-index:2}
+
+@media (prefers-reduced-motion:reduce){ #progress{transition:none} }
+
+/* PDF: 16:9 페이지 1장 = 슬라이드 1장 */
+@page{size:13.333in 7.5in;margin:0}
+@media print{
+  html, body{overflow:visible!important;height:auto!important;background:#FFFFFF}
+  #nav, #progress, .grid-overlay{display:none!important}
+  #stage{position:static!important;transform:none!important;width:13.333in!important;aspect-ratio:auto!important;overflow:visible!important}
+  #stage > .slide{position:relative!important;display:flex!important;width:13.333in;height:7.5in;
+    break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #stage > .slide:last-child{break-after:auto;page-break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<main id="stage">
+
+<!-- ===== 1. 표지 ===== -->
+<section class="slide active title-slide" aria-label="1. 표지">
+  <div class="slide-content">
+    <div class="kicker">공부방 · 학원 원장 · 1인기업가</div>
+    <h1>바이브코딩으로 추석 인사말 선화 영상 만들기</h1>
+    <p class="lede">2시간 실습 과정 · 기획부터 MP4 완성까지</p>
+    <div class="meta-row"><span>Codex</span><span>화이트보드 선화</span><span>추석 영상 1편</span></div>
+  </div>
+</section>
+
+<!-- ===== 2. 오늘의 결과물 ===== -->
+<section class="slide" aria-label="2. 오늘의 결과물">
+  <div class="slide-content">
+    <div class="kicker">수업 목표</div>
+    <h2>오늘의 결과물</h2>
+    <div class="card-grid c3">
+      <div class="card"><div class="n">1</div><div class="t">추석 인사말</div><div class="d">고객과 학부모에게 맞춘 짧은 메시지</div></div>
+      <div class="card"><div class="n">2</div><div class="t">선화 장면</div><div class="d">자막 순서대로 그려지는 손그림 화면</div></div>
+      <div class="card"><div class="n">3</div><div class="t">완성 영상</div><div class="d">자막과 내레이션을 담은 MP4 1편</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 3. 오늘의 순서 ===== -->
+<section class="slide" aria-label="3. 오늘의 순서">
+  <div class="slide-content">
+    <div class="kicker">2시간 진행표</div>
+    <h2>오늘의 순서</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">시간</th><th scope="col">내용</th></tr></thead>
+      <tbody>
+        <tr class="today"><td>0~50분</td><td>1부 · 도구 설치와 인사말 설계</td></tr>
+        <tr><td>50~60분</td><td>휴식</td></tr>
+        <tr><td>60~110분</td><td>2부 · 선화 제작과 영상 렌더링</td></tr>
+        <tr><td>110~120분</td><td>완성본 검사와 활용 정리</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 4. 완성작 미리보기 ===== -->
+<section class="slide" aria-label="4. 완성작 미리보기">
+  <div class="slide-content">
+    <div class="kicker">결과 먼저 보기</div>
+    <h2>완성작 미리보기</h2>
+    <div class="card-grid c2">
+      <div class="card good"><div class="t">바로가기</div><div class="d"><a href="https://youtu.be/2ShTyKbXAaw" target="_blank" rel="noopener">유튜브 완성작 재생</a></div></div>
+      <div class="card"><div class="t">관찰 기준</div><div class="d">그림 등장 순서 · 자막 호흡 · 내레이션 속도 · 마지막 인사</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. 선화 영상의 특징 ===== -->
+<section class="slide" aria-label="5. 선화 영상의 특징">
+  <div class="slide-content">
+    <div class="kicker">표현 방식</div>
+    <h2>선화 영상의 특징</h2>
+    <div class="card-grid c3">
+      <div class="card"><div class="n">1</div><div class="t">손그림</div><div class="d">따뜻한 종이 위에 이어지는 필적</div></div>
+      <div class="card"><div class="n">2</div><div class="t">순차 등장</div><div class="d">자막의 의미 순서에 맞춘 요소 노출</div></div>
+      <div class="card"><div class="n">3</div><div class="t">음성 결합</div><div class="d">자막 시간에 맞춘 한국어 내레이션</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6. 전체 제작 흐름 ===== -->
+<section class="slide" aria-label="6. 전체 제작 흐름">
+  <div class="slide-content">
+    <div class="kicker">한눈에 보기</div>
+    <h2>전체 제작 흐름</h2>
+    <ul class="bullets">
+      <li>메시지 기획 → 30초 인사말 작성</li>
+      <li>인사말 정리 → SRT 자막 구성</li>
+      <li>장면 설계 → 선화와 영역 주석 제작</li>
+      <li>미리보기 조정 → MP4 렌더링</li>
+      <li>자막·음성 결합 → 최종 품질 검사</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 7. 수업 준비물 ===== -->
+<section class="slide" aria-label="7. 수업 준비물">
+  <div class="slide-content">
+    <div class="kicker">실습 환경</div>
+    <h2>수업 준비물</h2>
+    <ul class="bullets">
+      <li>작업 도구: Windows 노트북과 Codex</li>
+      <li>실행 환경: Python 3.10 이상</li>
+      <li>미리보기: Chrome 또는 Edge</li>
+      <li>설치 준비: Git과 인터넷 연결</li>
+      <li>메시지 자료: 상호명과 전달 대상</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 8. Codex의 역할 ===== -->
+<section class="slide" aria-label="8. Codex의 역할">
+  <div class="slide-content">
+    <div class="kicker">바이브코딩</div>
+    <h2>Codex의 역할</h2>
+    <div class="card-grid c3">
+      <div class="card"><div class="n">1</div><div class="t">기획</div><div class="d">대상에 맞는 인사말과 장면 구성</div></div>
+      <div class="card"><div class="n">2</div><div class="t">제작</div><div class="d">선화 생성과 영역 주석 작성</div></div>
+      <div class="card"><div class="n">3</div><div class="t">완성</div><div class="d">렌더링과 자막·음성 결합</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 9. 화이트보드 스킬 ===== -->
+<section class="slide" aria-label="9. 화이트보드 스킬">
+  <div class="slide-content">
+    <div class="kicker">제작 도구</div>
+    <h2>화이트보드 스킬</h2>
+    <ul class="bullets">
+      <li>이름: srt-whiteboard-animation-v2</li>
+      <li>입력: 시간 정보가 있는 SRT 자막</li>
+      <li>연출: 자막 서사에 맞춘 영역별 그리기</li>
+      <li>편집: 브라우저에서 영역과 타이밍 조정</li>
+      <li>출력: 장면별 또는 통합 MP4 영상</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 10. 전역 설치 명령어 ===== -->
+<section class="slide" aria-label="10. 전역 설치 명령어">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용 · PowerShell</div>
+    <h2>전역 설치 명령어</h2>
+    <div class="prompt-card">
+      <div class="label">Codex 전역 스킬 설치</div>
+<blockquote id="pt-install">git clone https://github.com/mintorain/srt-whiteboard-animation-v2.git "$HOME\.codex\skills\srt-whiteboard-animation-v2"
+python "$HOME\.codex\skills\srt-whiteboard-animation-v2\scripts\prepare_env.py"</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-install" aria-label="Codex 전역 스킬 설치 명령어 복사">복사</button>
+    </div>
+    <p class="lede">설치 완료 뒤 Codex 다시 시작</p>
+  </div>
+</section>
+
+<!-- ===== 11. 설치 상태 확인 ===== -->
+<section class="slide" aria-label="11. 설치 상태 확인">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용 · PowerShell</div>
+    <h2>설치 상태 확인</h2>
+    <div class="prompt-card">
+      <div class="label">필수 패키지 점검</div>
+<blockquote id="pt-check">python "$HOME\.codex\skills\srt-whiteboard-animation-v2\scripts\prepare_env.py" --check</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-check" aria-label="설치 상태 확인 명령어 복사">복사</button>
+    </div>
+    <p class="lede">정상 기준: 마지막 줄에 ENV_PY 경로 표시</p>
+  </div>
+</section>
+
+<!-- ===== 12. 프로젝트 폴더 ===== -->
+<section class="slide" aria-label="12. 프로젝트 폴더">
+  <div class="slide-content">
+    <div class="kicker">파일 관리</div>
+    <h2>프로젝트 폴더</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">파일</th><th scope="col">역할</th></tr></thead>
+      <tbody>
+        <tr><td>.srt</td><td>자막 문장과 시간 정보</td></tr>
+        <tr><td>.png</td><td>장면별 원본 선화</td></tr>
+        <tr><td>.annotation.json</td><td>영역·순서·타이밍 정보</td></tr>
+        <tr><td>-preview.mp4</td><td>빠른 검토용 영상</td></tr>
+        <tr><td>-whiteboard.mp4</td><td>고화질 완성 장면</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 13. 추석 인사말 구조 ===== -->
+<section class="slide" aria-label="13. 추석 인사말 구조">
+  <div class="slide-content">
+    <div class="kicker">메시지 기획</div>
+    <h2>추석 인사말 구조</h2>
+    <div class="card-grid c2">
+      <div class="card"><div class="n">1</div><div class="t">도입과 감사</div><div class="d">한가위 분위기 제시 · 함께한 시간에 대한 감사</div></div>
+      <div class="card"><div class="n">2</div><div class="t">소망과 발신자</div><div class="d">건강과 평안 기원 · 상호명 또는 브랜드 마무리</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 14. 대상별 인사말 ===== -->
+<section class="slide" aria-label="14. 대상별 인사말">
+  <div class="slide-content">
+    <div class="kicker">말투 선택</div>
+    <h2>대상별 인사말</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">대상</th><th scope="col">중심 메시지</th><th scope="col">말투</th></tr></thead>
+      <tbody>
+        <tr><td>공부방</td><td>아이의 성장과 가정의 평안</td><td>다정하고 친근한 표현</td></tr>
+        <tr><td>학원</td><td>학생의 노력과 학부모의 신뢰</td><td>정중하고 따뜻한 표현</td></tr>
+        <tr><td>1인기업</td><td>고객의 선택과 협력에 대한 감사</td><td>간결하고 브랜드다운 표현</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 15. 영상 길이 설계 ===== -->
+<section class="slide" aria-label="15. 영상 길이 설계">
+  <div class="slide-content">
+    <div class="kicker">30초 기준</div>
+    <h2>영상 길이 설계</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">구간</th><th scope="col">내용</th><th scope="col">권장 길이</th></tr></thead>
+      <tbody>
+        <tr><td>도입</td><td>보름달과 한가위 분위기</td><td>5초</td></tr>
+        <tr><td>감사</td><td>함께한 시간과 신뢰</td><td>10초</td></tr>
+        <tr><td>소망</td><td>건강과 행복 기원</td><td>10초</td></tr>
+        <tr><td>마침</td><td>상호명과 인사</td><td>5초</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 16. SRT 자막 구조 ===== -->
+<section class="slide" aria-label="16. SRT 자막 구조">
+  <div class="slide-content">
+    <div class="kicker">시간 자막</div>
+    <h2>SRT 자막 구조</h2>
+    <div class="prompt-card">
+      <div class="label">자막 예시</div>
+<blockquote id="pt-srt-example">1
+00:00:00,000 --> 00:00:05,000
+둥근 달처럼 마음까지 환한 한가위
+
+2
+00:00:05,000 --> 00:00:12,000
+함께해 주신 마음에 깊이 감사드립니다</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-srt-example" aria-label="SRT 자막 예시 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 17. SRT 작성 프롬프트 ===== -->
+<section class="slide" aria-label="17. SRT 작성 프롬프트">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용</div>
+    <h2>SRT 작성 프롬프트</h2>
+    <div class="prompt-card">
+      <div class="label">30초 추석 인사말</div>
+<blockquote id="pt-srt">공부방 학부모에게 보낼 30초 추석 인사말을 SRT 형식으로 만들어줘. 도입·감사·소망·마침 순서로 구성하고, 한 자막은 한 문장으로 작성해줘. 마지막에는 [공부방 이름]을 넣어줘.</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-srt" aria-label="SRT 작성 프롬프트 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 18. 실습 1 · 대본과 전략 ===== -->
+<section class="slide" aria-label="18. 실습 1 · 대본과 전략">
+  <div class="slide-content">
+    <div class="kicker">실습 1 · 15분</div>
+    <h2>대본과 전략</h2>
+    <ul class="bullets">
+      <li>대상 선택: 학부모 또는 고객 1개</li>
+      <li>발신자 입력: 상호명 또는 브랜드명</li>
+      <li>30초 인사말 생성과 말투 수정</li>
+      <li>SRT 저장과 시간 구간 확인</li>
+      <li>Codex의 삽화 전략 확인</li>
+    </ul>
+    <button type="button" class="timer-chip" data-minutes="15" title="클릭: 시작·일시정지 · 더블클릭 또는 R: 리셋">⏱ <span class="time">15:00</span> 대본과 전략 작성 <span class="state">정지</span></button>
+  </div>
+</section>
+
+<!-- ===== 19. 휴식 ===== -->
+<section class="slide dark" aria-label="19. 휴식">
+  <div class="slide-content" style="align-items:center;text-align:center">
+    <div class="kicker">휴식</div>
+    <button type="button" class="break-big" data-minutes="10" title="클릭: 시작·일시정지 · 더블클릭 또는 R: 리셋" aria-label="휴식 타이머 10분"><span class="time">10:00</span></button>
+    <p class="lede">10분 뒤 선화 제작과 영상 렌더링 시작</p>
+  </div>
+</section>
+
+<!-- ===== 20. 단계별 확인 관문 ===== -->
+<section class="slide" aria-label="20. 단계별 확인 관문">
+  <div class="slide-content">
+    <div class="kicker">2부 · 제작</div>
+    <h2>단계별 확인 관문</h2>
+    <ul class="bullets">
+      <li>전략 확인 → 장면별 핵심 의미 확정</li>
+      <li>선화 확인 → 스타일과 구도 확정</li>
+      <li>주석 확인 → 영역과 등장 순서 확정</li>
+      <li>미리보기 확인 → 타이밍 조정</li>
+      <li>완성본 확인 → 장면 병합과 최종 저장</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 21. 선화 시각 규범 ===== -->
+<section class="slide" aria-label="21. 선화 시각 규범">
+  <div class="slide-content">
+    <div class="kicker">화면 일관성</div>
+    <h2>선화 시각 규범</h2>
+    <div class="card-grid c3">
+      <div class="card"><div class="n">1</div><div class="t">종이와 선</div><div class="d">미색 종이 배경 · 짙은 회색 스케치 선</div></div>
+      <div class="card"><div class="n">2</div><div class="t">색과 여백</div><div class="d">빨강·주황·파랑 소량 · 넉넉한 간격</div></div>
+      <div class="card"><div class="n">3</div><div class="t">금지 요소</div><div class="d">문자·사진 느낌·3D 효과·복잡한 배경 제외</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 22. 선화 생성 프롬프트 ===== -->
+<section class="slide" aria-label="22. 선화 생성 프롬프트">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용</div>
+    <h2>선화 생성 프롬프트</h2>
+    <div class="prompt-card">
+      <div class="label">추석 선화 장면</div>
+<blockquote id="pt-lineart">따뜻한 미색 종이 배경의 미니멀 손그림 선화로 만들어줘. 보름달, 송편, 한복 입은 가족을 서로 겹치지 않게 배치하고 넉넉한 여백을 남겨줘. 짙은 회색 선과 빨강·주황·파랑의 작은 포인트만 사용하고, 화면 안에는 문자와 숫자를 넣지 말아줘.</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-lineart" aria-label="선화 생성 프롬프트 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 23. 선화 검수 기준 ===== -->
+<section class="slide" aria-label="23. 선화 검수 기준">
+  <div class="slide-content">
+    <div class="kicker">생성 직후 확인</div>
+    <h2>선화 검수 기준</h2>
+    <ul class="bullets">
+      <li>스타일: 장면마다 같은 선 굵기와 종이색</li>
+      <li>구도: 주체 사이의 충분한 분리와 여백</li>
+      <li>내용: 자막의 핵심 의미와 그림의 일치</li>
+      <li>문자: 한글·영문·숫자·라벨 0개</li>
+      <li>복잡도: 한 장면에 핵심 의미 1개</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 24. 영역 주석의 개념 ===== -->
+<section class="slide" aria-label="24. 영역 주석의 개념">
+  <div class="slide-content">
+    <div class="kicker">그리기 제어</div>
+    <h2>영역 주석의 개념</h2>
+    <div class="card-grid c3">
+      <div class="card"><div class="n">1</div><div class="t">영역</div><div class="d">그림 요소를 감싸는 좌표 상자</div></div>
+      <div class="card"><div class="n">2</div><div class="t">순서</div><div class="d">서사에 맞춘 요소 등장 차례</div></div>
+      <div class="card"><div class="n">3</div><div class="t">시간</div><div class="d">자막과 연결된 시작·종료 시점</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 25. 서사 순서 ===== -->
+<section class="slide" aria-label="25. 서사 순서">
+  <div class="slide-content">
+    <div class="kicker">의미 중심 배치</div>
+    <h2>서사 순서</h2>
+    <ul class="bullets">
+      <li>장면 깔기: 달과 하늘 등 배경 요소</li>
+      <li>핵심 대상: 가족·학생·고객 등 중심 주체</li>
+      <li>행동과 변화: 인사·선물·웃음 등 사건</li>
+      <li>반응과 결과: 행복·감사·평안의 결말</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 26. 주석 데이터 ===== -->
+<section class="slide" aria-label="26. 주석 데이터">
+  <div class="slide-content">
+    <div class="kicker">annotation.json</div>
+    <h2>주석 데이터</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">항목</th><th scope="col">역할</th></tr></thead>
+      <tbody>
+        <tr><td>region</td><td>요소의 위치와 크기</td></tr>
+        <tr><td>sequence</td><td>요소가 그려지는 순서</td></tr>
+        <tr><td>startMs</td><td>그리기 시작 시점</td></tr>
+        <tr><td>protectedRegions</td><td>이미 그린 요소의 보호 영역</td></tr>
+        <tr><td>subtitle</td><td>영역과 연결된 자막</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 27. 미리보기 편집대 ===== -->
+<section class="slide" aria-label="27. 미리보기 편집대">
+  <div class="slide-content">
+    <div class="kicker">브라우저 편집</div>
+    <h2>미리보기 편집대</h2>
+    <ul class="bullets">
+      <li>영역 조정: 모서리와 변을 끌어 위치 수정</li>
+      <li>순서 조정: 모듈 목록을 끌어 등장 순서 변경</li>
+      <li>시간 조정: 시작·종료 시점과 길이 확인</li>
+      <li>자막 연결: 선택 영역의 대응 문장 확인</li>
+      <li>파일 저장: 전체 저장으로 주석 반영</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 28. 장면 타이밍 ===== -->
+<section class="slide" aria-label="28. 장면 타이밍">
+  <div class="slide-content">
+    <div class="kicker">자막과 그림의 호흡</div>
+    <h2>장면 타이밍</h2>
+    <div class="card-grid c2">
+      <div class="card bad"><div class="t">아쉬운 예</div><div class="d">자막보다 늦은 그림 · 짧은 장면에 많은 요소 · 끝나지 않은 필적</div></div>
+      <div class="card good"><div class="t">좋은 예</div><div class="d">핵심 단어와 그림의 동시 등장 · 마지막 0.5초의 완성 화면</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 29. 스트림 필적 ===== -->
+<section class="slide" aria-label="29. 스트림 필적">
+  <div class="slide-content">
+    <div class="kicker">그리는 움직임</div>
+    <h2>스트림 필적</h2>
+    <div class="card-grid c2">
+      <div class="card"><div class="n">1</div><div class="t">잉크 단계</div><div class="d">펜촉 경로를 따라 짙은 선을 연속적으로 그리기</div></div>
+      <div class="card"><div class="n">2</div><div class="t">채색 단계</div><div class="d">선화 위에 제한된 포인트 색을 순차적으로 채우기</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 30. 영상 렌더링 ===== -->
+<section class="slide" aria-label="30. 영상 렌더링">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용</div>
+    <h2>영상 렌더링</h2>
+    <div class="prompt-card">
+      <div class="label">Codex 요청</div>
+<blockquote id="pt-render">확인한 최종 주석을 사용해 장면별 고화질 MP4를 렌더링해줘. 시작, 중간, 마지막 화면을 표본 검사하고 결과 파일 경로를 알려줘.</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-render" aria-label="영상 렌더링 요청 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 31. 자막 번인 ===== -->
+<section class="slide" aria-label="31. 자막 번인">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용</div>
+    <h2>자막 번인</h2>
+    <div class="prompt-card">
+      <div class="label">Codex 요청</div>
+<blockquote id="pt-caption">완성한 MP4에 이 SRT 자막을 번인해줘. 세로 영상의 안전 영역을 지키고, 자막이 그림의 핵심 요소를 가리지 않게 배치해줘.</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-caption" aria-label="자막 번인 요청 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 32. 내레이션 합성 ===== -->
+<section class="slide" aria-label="32. 내레이션 합성">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용</div>
+    <h2>내레이션 합성</h2>
+    <div class="prompt-card">
+      <div class="label">Codex 요청</div>
+<blockquote id="pt-narration">SRT 자막을 자연스러운 한국어 여성 음성으로 읽고 영상에 합성해줘. 자막 구간을 넘는 문장은 속도를 조정하고, 음성이 끊기지 않게 하나의 흐름으로 연결해줘.</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-narration" aria-label="내레이션 합성 요청 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 33. 다중 장면 병합 ===== -->
+<section class="slide" aria-label="33. 다중 장면 병합">
+  <div class="slide-content">
+    <div class="kicker">복사해서 사용</div>
+    <h2>다중 장면 병합</h2>
+    <div class="prompt-card">
+      <div class="label">Codex 요청</div>
+<blockquote id="pt-merge">확인한 장면별 완성 영상을 순서대로 병합해줘. 해상도와 프레임 속도를 통일하고, 최종 MP4가 처음부터 끝까지 재생되는지 검사해줘.</blockquote>
+      <button type="button" class="copy-btn" data-copy-target="pt-merge" aria-label="다중 장면 병합 요청 복사">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 34. 실습 2 · 완성본 제작 ===== -->
+<section class="slide" aria-label="34. 실습 2 · 완성본 제작">
+  <div class="slide-content">
+    <div class="kicker">실습 2 · 25분</div>
+    <h2>완성본 제작</h2>
+    <ul class="bullets">
+      <li>선화 확인과 영역 주석 생성</li>
+      <li>미리보기 편집대의 순서·시간 조정</li>
+      <li>장면별 MP4 렌더링</li>
+      <li>자막 번인과 내레이션 합성</li>
+      <li>최종 파일 재생과 저장 경로 확인</li>
+    </ul>
+    <button type="button" class="timer-chip" data-minutes="25" title="클릭: 시작·일시정지 · 더블클릭 또는 R: 리셋">⏱ <span class="time">25:00</span> 완성본 제작 <span class="state">정지</span></button>
+  </div>
+</section>
+
+<!-- ===== 35. 최종 품질 검사 ===== -->
+<section class="slide" aria-label="35. 최종 품질 검사">
+  <div class="slide-content">
+    <div class="kicker">제출 전 확인</div>
+    <h2>최종 품질 검사</h2>
+    <ul class="bullets">
+      <li>화면: 요청한 비율과 해상도</li>
+      <li>그림: 모든 요소의 자연스러운 완성</li>
+      <li>자막: 오탈자 0건과 안전 영역 유지</li>
+      <li>음성: 끊김 없는 발음과 적절한 음량</li>
+      <li>파일: 처음부터 끝까지 재생 가능한 MP4</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 36. 마침과 활용 ===== -->
+<section class="slide title-slide" aria-label="36. 마침과 활용">
+  <div class="slide-content">
+    <div class="kicker">추석 인사말 선화 영상</div>
+    <h1>수고하셨습니다</h1>
+    <p class="lede">학부모 인사 · 고객 감사 · SNS 게시 · 브랜드 소식</p>
+    <div class="meta-row"><span>기획</span><span>제작</span><span>완성</span></div>
+  </div>
+</section>
+
+</main>
+
+<div id="progress" aria-hidden="true"></div>
+<nav id="nav" aria-label="슬라이드 이동">
+  <a href="index.html" target="_blank" rel="noopener" class="hide-sm" aria-label="강의 홈 새 창으로 열기">⌂ 홈</a>
+  <button type="button" id="navPrev" aria-label="이전 슬라이드">◀</button>
+  <span id="counter" aria-live="polite">1 / 8</span>
+  <button type="button" id="navNext" aria-label="다음 슬라이드">▶</button>
+  <span class="grow"></span>
+  <span class="hint hide-sm">← → 이동 · G 전체보기 · P PDF</span>
+  <button type="button" id="gridBtn" aria-haspopup="dialog" aria-controls="gridOverlay">▦ 전체 보기</button>
+  <button type="button" id="printBtn" class="hide-sm">⎙ PDF 저장</button>
+</nav>
+
+<div class="grid-overlay" id="gridOverlay" role="dialog" aria-modal="true" aria-label="전체 슬라이드 보기">
+  <div class="grid-head"><h2>전체 보기</h2><button type="button" id="gridClose">닫기 (Esc)</button></div>
+  <div class="grid-list" id="gridList"></div>
+</div>
+
+<script>
+(function(){
+  /* ▼ 내 강의 고유 접두사로 변경 (예: 'ai0927_') */
+  var LS = 'mykit_';
+
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(stage.querySelectorAll(':scope > section.slide'));
+  var total = slides.length;
+  var STORAGE_KEY = LS + 'slide';
+  var idx = 0;
+
+  function lsGet(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, v); } catch (e) { /* 저장 불가 환경 · 무시 */ } }
+
+  /* 시작 위치: ?slide=N 우선, 없으면 마지막으로 본 장 */
+  var params = new URLSearchParams(location.search);
+  var qSlide = parseInt(params.get('slide'), 10);
+  if (!isNaN(qSlide) && qSlide >= 1 && qSlide <= total) {
+    idx = qSlide - 1;
+  } else {
+    var saved = parseInt(lsGet(STORAGE_KEY), 10);
+    if (!isNaN(saved) && saved >= 0 && saved < total) idx = saved;
+  }
+
+  var progressEl = document.getElementById('progress');
+  var counterEl = document.getElementById('counter');
+  var navPrev = document.getElementById('navPrev');
+  var navNext = document.getElementById('navNext');
+  var gridOverlay = document.getElementById('gridOverlay');
+  var gridList = document.getElementById('gridList');
+  var minis = [];
+  var lastFocus = null;
+
+  function show(i){
+    idx = Math.max(0, Math.min(total - 1, i));
+    slides.forEach(function(s, n){
+      s.classList.toggle('active', n === idx);
+      s.setAttribute('aria-hidden', n === idx ? 'false' : 'true');
+    });
+    progressEl.style.width = ((idx + 1) / total * 100) + '%';
+    counterEl.textContent = (idx + 1) + ' / ' + total;
+    navPrev.disabled = idx === 0;
+    navNext.disabled = idx === total - 1;
+    minis.forEach(function(m, n){ m.classList.toggle('current', n === idx); });
+    lsSet(STORAGE_KEY, String(idx));
+  }
+
+  function scaleMinis(){
+    minis.forEach(function(m){ m.firstChild.style.transform = 'scale(' + (m.clientWidth / 960) + ')'; });
+  }
+  window.addEventListener('resize', function(){ if (gridOverlay.classList.contains('open')) scaleMinis(); });
+  function openGrid(){
+    lastFocus = document.activeElement;
+    gridOverlay.classList.add('open');
+    scaleMinis();
+    var c = minis[idx];
+    if (c) { c.scrollIntoView({block:'center'}); c.focus(); }
+  }
+  function closeGrid(){
+    gridOverlay.classList.remove('open');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if (t && t.closest && t.closest('input, textarea, select')) return;
+    if (gridOverlay.classList.contains('open')) {
+      if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') { closeGrid(); }
+      return;
+    }
+    /* 버튼에 포커스가 있을 때 스페이스·엔터는 버튼 동작에 양보 */
+    var onButton = t && t.closest && t.closest('button, a');
+    if ((e.key === ' ' || e.key === 'Enter') && onButton) return;
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(idx + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(idx - 1); }
+    else if (e.key === 'g' || e.key === 'G' || e.key === 'ㅎ') { openGrid(); }
+    else if (e.key === 'p' || e.key === 'P' || e.key === 'ㅔ') { e.preventDefault(); window.print(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(total - 1); }
+  });
+
+  /* 무대 클릭: 오른쪽 절반 다음 · 왼쪽 절반 이전 (버튼·링크·프롬프트 카드 제외) */
+  stage.addEventListener('click', function(e){
+    if (e.target.closest('button, a, .prompt-card')) return;
+    var rect = stage.getBoundingClientRect();
+    if (e.clientX - rect.left > rect.width / 2) show(idx + 1); else show(idx - 1);
+  });
+  navPrev.addEventListener('click', function(){ show(idx - 1); });
+  navNext.addEventListener('click', function(){ show(idx + 1); });
+  document.getElementById('gridBtn').addEventListener('click', openGrid);
+  document.getElementById('gridClose').addEventListener('click', closeGrid);
+  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+
+  /* 타이머: 벽시계 기준 (탭이 뒤로 가도 시간이 밀리지 않음) */
+  function initTimer(el){
+    var totalSec = parseInt(el.dataset.minutes, 10) * 60;
+    var remaining = totalSec;
+    var endAt = null;
+    var running = false;
+    var tickId = null;
+    var timeEl = el.querySelector('.time');
+    var stateEl = el.querySelector('.state');
+
+    function currentRemaining(){
+      if (!running) return remaining;
+      return Math.round((endAt - Date.now()) / 1000);
+    }
+    function format(sec){
+      var neg = sec < 0, abs = Math.abs(sec);
+      var m = Math.floor(abs / 60), s = abs % 60;
+      return (neg ? '+' : '') + m + ':' + (s < 10 ? '0' + s : s);
+    }
+    function render(){
+      var sec = currentRemaining();
+      timeEl.textContent = format(sec);
+      el.classList.toggle('warn', sec <= 60);
+      if (stateEl) stateEl.textContent = running ? '진행' : '정지';
+    }
+    function start(){
+      if (running) return;
+      running = true;
+      endAt = Date.now() + remaining * 1000;
+      el.classList.add('running');
+      tickId = setInterval(render, 250);
+      render();
+    }
+    function pause(){
+      if (running) remaining = currentRemaining();
+      running = false;
+      el.classList.remove('running');
+      clearInterval(tickId);
+      render();
+    }
+    function reset(){
+      running = false;
+      clearInterval(tickId);
+      remaining = totalSec;
+      el.classList.remove('running');
+      render();
+    }
+    el.addEventListener('click', function(){ if (running) pause(); else start(); });
+    el.addEventListener('dblclick', function(e){ e.stopPropagation(); reset(); });
+    el.addEventListener('keydown', function(e){ if (e.key === 'r' || e.key === 'R' || e.key === 'ㄱ') { e.preventDefault(); reset(); } });
+    render();
+  }
+  stage.querySelectorAll('.timer-chip, .break-big[data-minutes]').forEach(initTimer);
+
+  /* 복사 버튼: clipboard API가 700ms 안에 끝나지 않으면 textarea 폴백 · 완료 표시는 한 번만 */
+  stage.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var target = document.getElementById(btn.dataset.copyTarget);
+      var text = target ? target.textContent : '';
+      var settled = false;
+      function done(){
+        if (settled) return;
+        settled = true;
+        btn.textContent = '복사됨 ✓';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = '복사'; btn.classList.remove('copied'); }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        setTimeout(function(){ if (!settled) fallbackCopy(text, done); }, 700);
+        navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+  function fallbackCopy(text, done){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* 구형 브라우저 · 무시 */ }
+    document.body.removeChild(ta);
+    done();
+  }
+
+  /* 전체보기 축소판: 타이머·복사 핸들러를 붙인 뒤 마지막에 생성 · 복제본은 inert로 포커스 제외 */
+  slides.forEach(function(s, n){
+    var mini = document.createElement('div');
+    mini.className = 'mini';
+    mini.tabIndex = 0;
+    mini.setAttribute('role', 'button');
+    mini.setAttribute('aria-label', (s.getAttribute('aria-label') || String(n + 1)) + ' 슬라이드로 이동');
+    var copy = document.createElement('div');
+    copy.className = s.className.replace(/\bactive\b/, '').trim();
+    copy.setAttribute('aria-hidden', 'true');
+    copy.setAttribute('inert', '');
+    copy.innerHTML = s.innerHTML;
+    copy.querySelectorAll('[id]').forEach(function(el){ el.removeAttribute('id'); });
+    var num = document.createElement('span');
+    num.className = 'mini-num';
+    num.setAttribute('aria-hidden', 'true');
+    num.textContent = n + 1;
+    var inner = document.createElement('div');
+    inner.className = 'mini-inner';
+    inner.appendChild(copy);
+    mini.appendChild(inner);
+    mini.appendChild(num);
+    mini.addEventListener('click', function(){ show(n); closeGrid(); });
+    mini.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(n); closeGrid(); } });
+    gridList.appendChild(mini);
+    minis.push(mini);
+  });
+  show(idx);
+})();
+</script>
+</body>
+</html>
