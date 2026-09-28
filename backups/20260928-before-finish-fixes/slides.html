@@ -833,7 +833,6 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
   var sync = null;
   var viewers = null;
   var online = false;
-  var STATE_EMPTY = false;
   var controlPanel = document.getElementById('instructorPanel');
 
   function canNav(){ return IS_ADMIN || IS_VIEW || !sync || !LOCKED; }
@@ -843,8 +842,7 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
     navNext.disabled = !ok || idx === total - 1;
     var text = '';
     var follow = false;
-    if (STATE_EMPTY && !IS_ADMIN) { text = '수업 시작 전 · 강사 화면 대기 중'; follow = true; }
-    else if (IS_ADMIN) text = '관리자';
+    if (IS_ADMIN) text = '관리자';
     else if (IS_VIEW || !sync) text = '자유 열람';
     else if (LOCKED) { text = '발표자를 따라가는 중'; follow = true; }
     else text = '자유 이동';
@@ -963,7 +961,6 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
     }
     sync.onState(function(state){
       if (!state) { flash('상태 읽기 실패 · 규칙 확인'); return; }
-      STATE_EMPTY = !!state.isEmpty;
       lastState = state;
       LOCKED = !!state.locked;
       applyPdf(state.pdf);

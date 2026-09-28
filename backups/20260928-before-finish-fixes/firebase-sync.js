@@ -52,7 +52,7 @@ export function createSync(cfg, deckId) {
   return {
     /* 상태가 바뀔 때마다 즉시 호출 (폴링 없음) */
     onState(cb) {
-      return onValue(stateRef, (s) => cb({ ...DEFAULT_STATE, ...(s.val() || {}), isEmpty: !s.exists() }), () => cb(null));
+      return onValue(stateRef, (s) => cb({ ...DEFAULT_STATE, ...(s.val() || {}) }), () => cb(null));
     },
     onConnection(cb) {
       return onValue(ref(db, '.info/connected'), (s) => cb(s.val() === true));
