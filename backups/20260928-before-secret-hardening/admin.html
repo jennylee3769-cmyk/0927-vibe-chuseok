@@ -84,10 +84,12 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
 <div id="gate">
   <form id="gateForm" autocomplete="off">
     <h1>관리자 제어판 <span class="demo-badge">목업</span></h1>
-    <p class="warn-box">목업 입장 · 실제 보안 아님 · 실제 운영은 Firebase Authentication 또는 서버 세션 연결</p>
-    <!-- 서버 연결 지점: Firebase Authentication 로그인 또는 서버 세션 확인 -->
+    <p class="warn-box">데모 잠금 · 실제 보안 아님 · 실제 운영은 Firebase Authentication 또는 서버 세션 연결</p>
+    <label for="pw">비밀번호 · 데모 1234</label>
+    <!-- 서버 연결 지점: POST /api/admin/login 또는 Firebase Authentication 로그인 -->
+    <input id="pw" type="password" inputmode="numeric" autocomplete="off" required>
     <p id="gateErr" role="alert"></p>
-    <button type="submit" class="btn">목업 입장</button>
+    <button type="submit" class="btn">입장</button>
   </form>
 </div>
 
@@ -244,6 +246,7 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
   var LS = 'chuseok0927_';
   var STATE_KEY = LS + 'admin';
   var AUTH_KEY = LS + 'admin_ok';
+  var DEMO_PW = '1234';
   var TITLES = ['표지','오늘의 결과물','오늘의 순서','완성작 미리보기','선화 영상의 특징','전체 제작 흐름','수업 준비물','Codex의 역할','화이트보드 스킬','전역 설치 명령어','설치 상태 확인','프로젝트 폴더','추석 인사말 구조','대상별 인사말','영상 길이 설계','SRT 자막 구조','SRT 작성 프롬프트','실습 1 · 대본과 전략','휴식','단계별 확인 관문','선화 시각 규범','선화 생성 프롬프트','선화 검수 기준','영역 주석의 개념','서사 순서','주석 데이터','미리보기 편집대','장면 타이밍','스트림 필적','영상 렌더링','자막 번인','내레이션 합성','다중 장면 병합','실습 2 · 완성본 제작','최종 품질 검사','마침과 활용'];
   var BREAKS = [18];
   var TOTAL = TITLES.length;
@@ -273,8 +276,8 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
 
   var gate=document.getElementById('gate'),panel=document.getElementById('panel');
   function enter(){gate.hidden=true;panel.hidden=false;render();}
-  document.getElementById('gateForm').addEventListener('submit',function(e){e.preventDefault();setSession(AUTH_KEY,'1');enter();});
-  document.getElementById('logout').addEventListener('click',function(){setSession(AUTH_KEY,null);panel.hidden=true;gate.hidden=false;});
+  document.getElementById('gateForm').addEventListener('submit',function(e){e.preventDefault();if(document.getElementById('pw').value===DEMO_PW){setSession(AUTH_KEY,'1');enter();}else document.getElementById('gateErr').textContent='비밀번호 불일치';});
+  document.getElementById('logout').addEventListener('click',function(){setSession(AUTH_KEY,null);panel.hidden=true;gate.hidden=false;document.getElementById('pw').value='';});
   document.getElementById('resetDemo').addEventListener('click',function(){if(!confirm('목업 데이터를 처음 상태로 되돌릴까요?'))return;S=seed();save();render();say('초기화 완료');});
 
   document.querySelectorAll('.switch').forEach(function(el){

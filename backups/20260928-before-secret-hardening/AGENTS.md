@@ -109,8 +109,8 @@
 ## 8. 배포
 
 - Vercel · GitHub Pages: `index.html`, `slides.html`, `admin.html`만 (정적 파일). `stats.php`는 동작 안 함
-- `admin.html`은 목업 · 입장 화면은 보안 기능이 아님
-- PHP 호스팅에서 `stats.php` 사용 시 `ADMIN_PASSWORD` 환경변수 필수 (미설정이면 관리자 기능 잠김)
+- `admin.html`은 목업 · 비밀번호 `1234`는 데모용, 보안 아님
+- PHP 호스팅에서 `stats.php` 사용 시 `$ADMIN_PASSWORD` 교체 필수 (기본값이면 관리자 기능 잠김)
 - 공유 미리보기: `index.html`의 `og:` 메타 4줄 + 1200x630 이미지
 
 ## 9. 검증 체크리스트 (작업 뒤 매번)

@@ -3,3 +3,9 @@
 AGENTS.md
 CLAUDE.md
 stats.php
+.env
+.env.*
+*.pem
+*.key
+firebase-adminsdk-*.json
+service-account*.json
