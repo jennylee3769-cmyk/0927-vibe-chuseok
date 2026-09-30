@@ -18,6 +18,10 @@
 <meta property="og:title" content="노트북LM 마스터하기 · 수업 슬라이드">
 <meta property="og:description" content="자료 추가부터 질문, 출처 확인, 요약과 퀴즈 제작까지 배우는 60분 실습 강의">
 <meta property="og:url" content="https://0927-vibe-chuseok.vercel.app/slides.html">
+<meta property="og:image" content="https://0927-vibe-chuseok.vercel.app/assets/og-notebooklm-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="노트북LM 마스터하기 강의 대표 이미지">
 <meta name="theme-color" content="#111111">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -177,10 +181,11 @@ table.tbl td:first-child{color:var(--sub)}
 @media print{
   html, body{overflow:visible!important;height:auto!important;background:#FFFFFF}
   #nav, #progress, .grid-overlay{display:none!important}
-  #stage{position:static!important;transform:none!important;width:13.333in!important;aspect-ratio:auto!important;overflow:visible!important}
-  #stage > .slide{position:relative!important;display:flex!important;width:13.333in;height:7.5in;
+  #stage{position:static!important;display:block!important;transform:none!important;width:13.333in!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;overflow:visible!important;border:0!important;box-shadow:none!important;box-sizing:border-box!important}
+  #stage > .slide{position:relative!important;display:flex!important;width:13.333in;height:7.5in;box-sizing:border-box!important;overflow:hidden!important;
     break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   #stage > .slide:last-child{break-after:auto;page-break-after:auto}
+  .source-guide-figure{flex:none!important;height:5.05in!important}
   html.no-pdf #stage{display:none!important}
   html.no-pdf body::before{content:"PDF 저장 비활성화 · 강사에게 문의";
     display:block;padding:2rem;font-size:14pt;color:#000}
@@ -218,7 +223,7 @@ body{background-color:#fff;background-image:linear-gradient(rgba(17,17,17,.11) 1
 .cards>*:nth-child(even),.grid>*:nth-child(even){transform:rotate(.7deg)}
 table{border:.3cqi solid #111!important;box-shadow:var(--hard)!important}th{background:#111!important;color:#fff!important}td{border-color:#111!important}
 blockquote,.prompt{border:.3cqi solid #F6C744!important;border-radius:0!important;box-shadow:.65cqi .65cqi 0 #F6C744!important}
-.title-slide{background:#F6C744!important}.title-slide::before{content:'VIBE / DRAW / VIDEO';position:absolute;left:-2cqi;bottom:1.5cqi;font-size:8.8cqi;font-weight:950;letter-spacing:-.08em;color:transparent;-webkit-text-stroke:.16cqi rgba(17,17,17,.2);transform:rotate(-5deg)}
+.title-slide{background:#F6C744!important}.title-slide::before{content:'NOTEBOOK / SOURCE / ASK';position:absolute;left:-2cqi;bottom:1.5cqi;font-size:8.8cqi;font-weight:950;letter-spacing:-.08em;color:transparent;-webkit-text-stroke:.16cqi rgba(17,17,17,.2);transform:rotate(-5deg)}
 .dark{background:#111!important;color:#fff!important}.dark::after{color:#111}
 #nav{border:.28cqi solid #111!important;border-radius:0!important;box-shadow:.55cqi .55cqi 0 #111!important}
 #nav button,#nav a{border-radius:0!important;font-weight:900!important}
@@ -242,7 +247,7 @@ blockquote,.prompt{border:.3cqi solid #F6C744!important;border-radius:0!importan
 
 <!-- ===== 1. 표지 ===== -->
 <section class="slide active title-slide" aria-label="1. 표지">
-  <style>.title-slide::before{content:'NOTEBOOK / SOURCE / ASK'}@media print{#stage{display:contents!important;height:auto!important;min-height:0!important}#stage>.title-slide>.slide-content{position:absolute!important;inset:4.6cqi 6cqi!important}#stage>.title-slide::before{display:none!important}}</style>
+  <style>.title-slide::before{content:'NOTEBOOK / SOURCE / ASK'}@media print{#stage>.title-slide::before{display:none!important}}</style>
   <div class="slide-content">
     <div class="kicker">성인 초급 학습자 · 60분 실습</div>
     <h1>노트북LM 마스터하기</h1>
@@ -378,7 +383,7 @@ blockquote,.prompt{border:.3cqi solid #F6C744!important;border-radius:0!importan
   <div class="slide-content compact">
     <div class="kicker">제공 이미지 전체 보기 · 2분</div>
     <h2>핵심 활용 가이드</h2>
-    <div style="display:grid;place-items:center;min-height:0;flex:1;overflow:hidden;background:#eef7fb;box-shadow:0 1cqi 2.4cqi rgba(0,0,0,.14)"><img src="assets/notebooklm/지식_관리_도구_활용_가이드.png" alt="스마트한 소스 수집과 지식 관리, 맞춤형 대화와 콘텐츠 생성을 설명하는 NotebookLM 2.0 활용 가이드" style="display:block;width:auto;height:100%;max-width:100%;object-fit:contain"></div>
+    <div class="source-guide-figure" style="position:relative;min-width:0;min-height:0;flex:1;overflow:hidden;background:#eef7fb;box-shadow:0 1cqi 2.4cqi rgba(0,0,0,.14)"><img src="assets/notebooklm/지식_관리_도구_활용_가이드.png" alt="스마트한 소스 수집과 지식 관리, 맞춤형 대화와 콘텐츠 생성을 설명하는 NotebookLM 2.0 활용 가이드" style="position:absolute;inset:0;display:block;width:100%!important;height:100%!important;object-fit:contain!important"></div>
   </div>
 </section>
 
@@ -415,7 +420,7 @@ blockquote,.prompt{border:.3cqi solid #F6C744!important;border-radius:0!importan
     <div class="kicker">제공 PDF · 9쪽 · 2분</div>
     <h2>디지털 브레인 자료</h2>
     <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:2cqi;min-height:0;flex:1">
-      <div style="display:grid;place-items:center;min-height:0;overflow:hidden;background:#eef7fb;box-shadow:0 1cqi 2.4cqi rgba(0,0,0,.14)"><img src="assets/notebooklm/The_Pastel_Digital_Brain-cover.jpg" alt="The Pastel Digital Brain PDF 첫 페이지" style="display:block;width:auto;height:100%;max-width:100%;object-fit:contain"></div>
+      <div style="display:grid;place-items:center;min-height:0;overflow:hidden;background:#eef7fb;box-shadow:0 1cqi 2.4cqi rgba(0,0,0,.14)"><img src="assets/notebooklm/The_Pastel_Digital_Brain-cover.jpg" alt="The Pastel Digital Brain PDF 첫 페이지" style="display:block;width:100%!important;height:100%!important;object-fit:contain!important"></div>
       <div class="card good"><div class="t">수업 활용</div><div class="d">수집-정리-확장-생성 흐름의 복습 자료</div><div class="d"><a href="assets/notebooklm/The_Pastel_Digital_Brain.pdf" target="_blank" rel="noopener">PDF 전체 보기</a></div></div>
     </div>
   </div>

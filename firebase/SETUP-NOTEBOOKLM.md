@@ -7,26 +7,28 @@
 - 웹 앱 닉네임: `notebooklm-slides`
 - 웹 앱 등록: 완료
 - 슬라이드 덱 ID: `notebooklm-0930`
+- Realtime Database: `asia-southeast1` 생성 완료
+- Database URL: `https://notebooklm-6db7d-default-rtdb.asia-southeast1.firebasedatabase.app`
+- 이메일/비밀번호 로그인: 사용 설정 완료
+- Realtime Database 보안 규칙: 게시 완료
 - 연결 설정 파일: `firebase/firebase-config.js`
 - 데이터베이스 규칙 파일: `firebase/database.rules.json`
 
-## 1. Realtime Database 생성
+## 1. Realtime Database 생성 - 완료
 
 1. Firebase 콘솔에서 `0930notebooklm` 프로젝트 열기
-2. 빌드 → Realtime Database → 데이터베이스 만들기
-3. 실제 수업 장소와 가까운 리전 선택
-4. 잠금 모드로 시작
-5. 생성 후 화면 상단의 데이터베이스 URL 복사
-6. `firebase/firebase-config.js`의 `databaseURL: ''`에 복사한 URL 입력
+2. 빌드 → Realtime Database 확인
+3. 위치: 싱가포르 `asia-southeast1`
+4. `firebase/firebase-config.js`에 Database URL 입력 완료
 
 리전은 데이터베이스 생성 뒤 바꾸기 어렵기 때문에 임의 선택 금지.
 
-## 2. Authentication 설정
+## 2. Authentication 설정 - 로그인 방식 완료
 
-1. 빌드 → Authentication → 시작하기
-2. Sign-in method → 이메일/비밀번호 사용 설정
+1. 빌드 → Authentication → 시작하기 완료
+2. Sign-in method → 이메일/비밀번호 사용 설정 완료
 3. Users → 사용자 추가
-4. 강사 로그인용 이메일과 비밀번호 등록
+4. 강사 로그인용 이메일과 본인만 아는 비밀번호 등록
 5. 생성된 사용자의 UID 복사
 
 ## 3. 관리자 UID 등록
@@ -48,7 +50,7 @@ admins
 }
 ```
 
-## 4. 보안 규칙 게시
+## 4. 보안 규칙 게시 - 완료
 
 1. Realtime Database → 규칙
 2. `firebase/database.rules.json` 전체 복사
@@ -78,4 +80,3 @@ admins
 - PDF 허용 OFF에서 PDF 저장 버튼 숨김
 - 로그아웃 또는 일반 계정에서 관리자 제어 버튼 숨김
 - Firebase 미설정 상태에서 자유 열람 유지
-

@@ -4,8 +4,7 @@
 window.FIREBASE_CONFIG = {
   apiKey: 'AIzaSyDFFUhbiuz8h-XBEIgFDNWzA0h4KUk1Fic',
   authDomain: 'notebooklm-6db7d.firebaseapp.com',
-  /* Realtime Database 생성 뒤 콘솔에 표시되는 URL 입력 · 생성 전에는 자유 열람 모드 */
-  databaseURL: '',
+  databaseURL: 'https://notebooklm-6db7d-default-rtdb.asia-southeast1.firebasedatabase.app',
   projectId: 'notebooklm-6db7d',
   storageBucket: 'notebooklm-6db7d.firebasestorage.app',
   messagingSenderId: '438275437698',

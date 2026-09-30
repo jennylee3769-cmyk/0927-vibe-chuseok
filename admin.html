@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-  추석 선화 영상 강의 관리자 목업
-  - 서버 없음: 모든 상태를 localStorage의 chuseok0927_admin 한 칸에 저장
+  노트북LM 강의 관리자 목업
+  - 서버 없음: 모든 상태를 localStorage의 notebooklm0930_admin 한 칸에 저장
   - 데모 로그인은 sessionStorage만 사용하며 실제 보안 기능이 아님
   - 실제 서버 연결 위치는 각 카드의 "서버 연결 지점" 주석으로 표시
   - 카드 순서 = 수업 중 강사의 실제 조작 순서
@@ -10,7 +10,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>관리자 제어판 · 바이브코딩 추석 선화 영상</title>
+<title>관리자 제어판 · 노트북LM 마스터하기</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#111111">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
@@ -67,7 +67,7 @@ table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;
 body{overflow-x:clip;background-color:#fff;background-image:linear-gradient(rgba(17,17,17,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.08) 1px,transparent 1px);background-size:24px 24px}
 header{background:#F6C744!important;border-bottom:5px solid #111!important;box-shadow:0 7px 0 #111!important}header h1{font-size:clamp(22px,4vw,48px)!important;letter-spacing:-.06em!important;text-transform:uppercase;text-shadow:3px 3px 0 #fff}
 .demo-badge{border:3px solid #111!important;border-radius:0!important;box-shadow:3px 3px 0 #fff!important;transform:rotate(-2deg)}
-.summary{border:4px solid #111!important;border-radius:0!important;box-shadow:var(--hard)!important;background:#F6C744!important}.summary::before{content:'LIVE CONTROL';display:inline-block;background:#111;color:#fff;padding:5px 9px;font-size:11px;font-weight:950;letter-spacing:.08em;transform:rotate(-2deg)}
+.summary{border:4px solid #111!important;border-radius:0!important;box-shadow:var(--hard)!important;background:#F6C744!important}.summary::before{content:'LIVE RUN';display:inline-block;background:#111;color:#fff;padding:5px 9px;font-size:11px;font-weight:950;letter-spacing:.08em;transform:rotate(-2deg)}
 .card{position:relative;border:4px solid #111!important;border-radius:0!important;box-shadow:var(--hard-lg)!important;transition:transform .18s ease,box-shadow .18s ease!important}.card:nth-child(odd){transform:rotate(-.35deg)}.card:nth-child(even){transform:rotate(.35deg)}.card:hover{transform:translateY(-5px) rotate(0)!important;box-shadow:14px 14px 0 #F6C744!important}
 .step{border:3px solid #111!important;border-radius:0!important;box-shadow:3px 3px 0 #111!important;transform:rotate(-3deg)}
 .card h2{font-size:clamp(24px,3vw,38px)!important;letter-spacing:-.05em!important;text-transform:uppercase}
@@ -93,10 +93,11 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
 
 <div class="wrap" id="panel" hidden>
   <header class="top">
-    <h1>추석 선화 영상 수업 <span class="demo-badge">localStorage 목업</span></h1>
+    <h1>노트북LM 마스터하기 <span class="demo-badge">localStorage 목업</span></h1>
     <div class="row">
       <a class="btn ghost" href="slides.html?admin" target="_blank" rel="noopener">강사 슬라이드</a>
       <a class="btn ghost" href="slides.html" target="_blank" rel="noopener">청중 화면</a>
+      <a class="btn ghost" href="slides.html?screen" target="_blank" rel="noopener">프로젝션 화면</a>
       <button type="button" class="btn ghost" id="resetDemo">초기화</button>
       <button type="button" class="btn ghost" id="logout">나가기</button>
     </div>
@@ -104,7 +105,7 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
 
   <aside class="summary" aria-label="수업 현황">
     <div><span>수업 상태</span><b id="sumStatus">준비</b></div>
-    <div><span>현재 슬라이드</span><b id="sumSlide">1 / 36</b></div>
+    <div><span>현재 슬라이드</span><b id="sumSlide">1 / 21</b></div>
     <div><span>청중</span><b id="sumViewers">0명</b></div>
     <div><span>자료</span><b id="sumMaterials">비공개</b></div>
   </aside>
@@ -118,47 +119,46 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
         <label class="field">진행 방식<select id="fClassMode"><option value="online">온라인</option><option value="offline">대면</option><option value="hybrid">혼합</option></select></label>
         <label class="field">자료 공개 시점<select id="fMaterialsTiming"><option value="before">수업 전</option><option value="during">수업 중</option><option value="after">수업 후</option></select></label>
       </div>
+      <div class="switchrow"><p id="swPracticeEnabledDesc"><b>실습 운영</b>실습 카드와 진행 현황 사용</p><div class="sw-wrap"><span class="sw-state" id="swPracticeEnabledState">OFF</span><div class="switch" id="swPracticeEnabled" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swPracticeEnabledDesc"></div></div></div>
       <div class="row"><button type="button" class="btn" id="saveSettings">설정 저장</button></div>
-      <!-- 서버 연결 지점: PATCH /api/classes/{id} · title, startAt, expectedViewers, classMode, materialsTiming -->
-      <p class="server-note">서버 저장: title · startAt · expectedViewers · classMode · materialsTiming</p>
+      <!-- 서버 연결 지점: PATCH /api/classes/{id} · title, startAt, expectedViewers, classMode, materialsTiming, practiceEnabled -->
+      <p class="server-note">서버 저장: title · startAt · expectedViewers · classMode · materialsTiming · practiceEnabled</p>
     </section>
 
-    <section class="card" aria-labelledby="hOpen"><span class="step">02</span><h2 id="hOpen">자료 공개 설정</h2>
-      <div class="switchrow"><p id="swSlidesOpenDesc"><b>슬라이드 공개</b>청중의 슬라이드 입장 허용</p><div class="sw-wrap"><span class="sw-state" id="swSlidesOpenState">OFF</span><div class="switch" id="swSlidesOpen" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swSlidesOpenDesc"></div></div></div>
-      <div class="switchrow"><p id="swPdfDesc"><b>PDF 저장 허용</b>관리자 포함 동일 정책 적용</p><div class="sw-wrap"><span class="sw-state" id="swPdfState">OFF</span><div class="switch" id="swPdf" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swPdfDesc"></div></div></div>
-      <div class="switchrow"><p id="swPracticeOpenDesc"><b>실습 자료 공개</b>실습 카드와 파일 공개</p><div class="sw-wrap"><span class="sw-state" id="swPracticeOpenState">OFF</span><div class="switch" id="swPracticeOpen" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swPracticeOpenDesc"></div></div></div>
-      <p class="policy">PDF OFF = 강사·청중 모두 저장 차단 · 관리자 예외 없음</p>
-      <!-- 서버 연결 지점: PATCH /api/classes/{id}/policies · 스위치 id에서 만든 키와 Boolean 값 -->
-      <p class="server-note">서버 저장: slidesOpen · pdf · practiceOpen</p>
-    </section>
-
-    <section class="card" aria-labelledby="hConnection"><span class="step">03</span><h2 id="hConnection">연결 상태</h2>
+    <section class="card" aria-labelledby="hConnection"><span class="step">02</span><h2 id="hConnection">연결 상태</h2>
       <div class="metrics"><div class="metric"><span>서버</span><b id="mConnection">목업</b></div><div class="metric"><span>현재 접속</span><b id="mViewers">0명</b></div><div class="metric"><span>최대 접속</span><b id="mPeak">0명</b></div></div>
       <div class="row"><button type="button" class="btn ghost" id="mockJoin">청중 +1</button><button type="button" class="btn ghost" id="mockLeave">청중 -1</button><button type="button" class="btn" id="reconnect">새로 연결</button></div>
       <!-- 서버 연결 지점: Firebase .info/connected · decks/{deckId}/viewers 구독 -->
       <p class="server-note">서버 저장: connected · viewerCount · peakViewerCount · lastConnectedAt</p>
     </section>
 
-    <section class="card" aria-labelledby="hStart"><span class="step">04</span><h2 id="hStart">수업 시작</h2>
+    <section class="card" aria-labelledby="hStart"><span class="step">03</span><h2 id="hStart">수업 시작</h2>
       <p class="note">표지 이동 · 청중 잠금 · 수업 상태 진행</p>
       <div class="row"><button type="button" class="btn" id="classStart">수업 시작</button><button type="button" class="btn ghost" id="goCover">표지 이동</button></div>
       <!-- 서버 연결 지점: PATCH /api/classes/{id}/state 또는 Firebase decks/{deckId}/state -->
       <p class="server-note">서버 저장: classStatus · startedAt · slide · locked</p>
     </section>
 
-    <section class="card wide" aria-labelledby="hSlides"><span class="step">05</span><h2 id="hSlides">슬라이드 제어</h2>
-      <div class="now" aria-live="polite"><span class="num" id="curNum">1</span><span class="tot" id="curTotal">/ 36</span><span class="ttl" id="curTitle">표지</span></div>
+    <section class="card wide" aria-labelledby="hSlides"><span class="step">04</span><h2 id="hSlides">슬라이드 제어</h2>
+      <div class="now" aria-live="polite"><span class="num" id="curNum">1</span><span class="tot" id="curTotal">/ 21</span><span class="ttl" id="curTitle">표지</span></div>
       <div class="row"><button type="button" class="btn" id="prevBtn">◀ 이전</button><button type="button" class="btn" id="nextBtn">다음 ▶</button></div>
       <div class="jump" id="jump" role="group" aria-label="번호로 이동"></div>
       <!-- 서버 연결 지점: Firebase decks/{deckId}/state/slide 또는 PATCH /api/classes/{id}/slide -->
       <p class="server-note">서버 저장: slide · updatedAt</p>
     </section>
 
-    <section class="card" aria-labelledby="hPolicy"><span class="step">06</span><h2 id="hPolicy">청중 화면 정책</h2>
+    <section class="card" aria-labelledby="hPolicy"><span class="step">05</span><h2 id="hPolicy">청중 화면 정책</h2>
       <div class="switchrow"><p id="swLockedDesc"><b>청중 잠금</b>강사 화면 자동 추적</p><div class="sw-wrap"><span class="sw-state" id="swLockedState">OFF</span><div class="switch" id="swLocked" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swLockedDesc"></div></div></div>
       <div class="switchrow"><p id="swCopyAllowedDesc"><b>복사 허용</b>프롬프트 복사 버튼 사용</p><div class="sw-wrap"><span class="sw-state" id="swCopyAllowedState">OFF</span><div class="switch" id="swCopyAllowed" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swCopyAllowedDesc"></div></div></div>
       <!-- 서버 연결 지점: PATCH /api/classes/{id}/policies -->
       <p class="server-note">서버 저장: locked · copyAllowed</p>
+    </section>
+
+    <section class="card" aria-labelledby="hDisplay"><span class="step">06</span><h2 id="hDisplay">화면 보기</h2>
+      <p class="note">강사 제어 · 청중 확인 · 프로젝션 화면 분리</p>
+      <div class="row"><a class="btn" href="slides.html?admin" target="_blank" rel="noopener">강사 화면</a><a class="btn ghost" href="slides.html" target="_blank" rel="noopener">청중 화면</a><a class="btn ghost" href="slides.html?screen" target="_blank" rel="noopener">프로젝션</a></div>
+      <!-- 서버 연결 지점: 필요 시 관리자 화면 환경설정 저장 -->
+      <p class="server-note">서버 저장: displayMode · fullscreen</p>
     </section>
 
     <section class="card" aria-labelledby="hPractice"><span class="step">07</span><h2 id="hPractice">실습 안내</h2>
@@ -191,21 +191,30 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
       <p class="server-note">서버 저장: status · endAt · remainingSeconds</p>
     </section>
 
-    <section class="card" aria-labelledby="hNotice"><span class="step">11</span><h2 id="hNotice">공지 전송</h2>
-      <label class="field">공지 문구<textarea id="noticeText" maxlength="160" placeholder="예: 10분 뒤 수업 재개"></textarea></label>
-      <div class="row"><button type="button" class="btn" id="noticeSend">공지 보내기</button><button type="button" class="btn ghost" id="noticeClose">공지 닫기</button></div>
-      <!-- 서버 연결 지점: PATCH /api/classes/{id}/notice -->
-      <p class="server-note">서버 저장: noticeText · noticeVisible · noticeUpdatedAt</p>
+    <section class="card" aria-labelledby="hOpen"><span class="step">11</span><h2 id="hOpen">자료 공개 설정</h2>
+      <div class="switchrow"><p id="swSlidesOpenDesc"><b>슬라이드 공개</b>청중의 슬라이드 입장 허용</p><div class="sw-wrap"><span class="sw-state" id="swSlidesOpenState">OFF</span><div class="switch" id="swSlidesOpen" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swSlidesOpenDesc"></div></div></div>
+      <div class="switchrow"><p id="swPdfDesc"><b>PDF 저장 허용</b>강사와 청중에 같은 정책 적용</p><div class="sw-wrap"><span class="sw-state" id="swPdfState">OFF</span><div class="switch" id="swPdf" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swPdfDesc"></div></div></div>
+      <div class="switchrow"><p id="swPracticeOpenDesc"><b>실습 자료 공개</b>실습 카드와 파일 공개</p><div class="sw-wrap"><span class="sw-state" id="swPracticeOpenState">OFF</span><div class="switch" id="swPracticeOpen" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swPracticeOpenDesc"></div></div></div>
+      <p class="policy">PDF OFF = 모든 접속자 저장 차단 · 관리자 예외 없음</p>
+      <!-- 서버 연결 지점: PATCH /api/classes/{id}/policies · 스위치 id에서 만든 키와 Boolean 값 -->
+      <p class="server-note">서버 저장: slidesOpen · pdf · practiceOpen</p>
     </section>
 
-    <section class="card wide" aria-labelledby="hQuestions"><span class="step">12</span><h2 id="hQuestions">질문 접수</h2>
+    <section class="card" aria-labelledby="hResources"><span class="step">12</span><h2 id="hResources">실습 링크</h2>
+      <p class="note">수업 중 바로 열고 복사할 외부 자료</p>
+      <div class="row"><a class="btn" href="https://www.youtube.com/watch?v=CFGyFW9Z6ug&amp;t=9s" target="_blank" rel="noopener">실습 영상</a><a class="btn ghost" href="https://chromewebstore.google.com/detail/%F0%9F%8D%8C-banananl/mjennffndagebhgcbeblffhgooohling?hl=ko&amp;utm_source=ext_sidebar" target="_blank" rel="noopener">BananaNL 설치</a></div>
+      <!-- 서버 연결 지점: GET/PATCH /api/classes/{id}/resources -->
+      <p class="server-note">서버 저장: resources/{id}/url · visible · publishedAt</p>
+    </section>
+
+    <section class="card wide" aria-labelledby="hQuestions"><span class="step">13</span><h2 id="hQuestions">질문 접수</h2>
       <div class="switchrow"><p id="swQuestionsOpenDesc"><b>질문 접수</b>익명 질문 입력 허용</p><div class="sw-wrap"><span class="sw-state" id="swQuestionsOpenState">OFF</span><div class="switch" id="swQuestionsOpen" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swQuestionsOpenDesc"></div></div></div>
       <table><thead><tr><th>질문</th><th>상태</th><th class="act">관리</th></tr></thead><tbody id="questionBody"></tbody></table>
       <!-- 서버 연결 지점: GET/POST/PATCH /api/classes/{id}/questions · 공개 화면에는 이름 필드 제외 -->
       <p class="server-note">서버 저장: questionsOpen · questions/{id}/text · approved · answered</p>
     </section>
 
-    <section class="card wide" aria-labelledby="hReviews"><span class="step">13</span><h2 id="hReviews">후기 접수</h2>
+    <section class="card wide" aria-labelledby="hReviews"><span class="step">14</span><h2 id="hReviews">후기 접수</h2>
       <div class="switchrow"><p id="swReviewsOpenDesc"><b>후기 접수</b>수업 종료 전후 입력 허용</p><div class="sw-wrap"><span class="sw-state" id="swReviewsOpenState">OFF</span><div class="switch" id="swReviewsOpen" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swReviewsOpenDesc"></div></div></div>
       <table><thead><tr><th>별점</th><th>후기</th><th class="act">공개</th></tr></thead><tbody id="reviewBody"></tbody></table>
       <p class="note">공개 화면은 무기명 · 공개는 건별 승인</p>
@@ -213,21 +222,28 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
       <p class="server-note">서버 저장: reviewsOpen · reviews/{id}/text · approved · submittedAt</p>
     </section>
 
-    <section class="card" aria-labelledby="hPublish"><span class="step">14</span><h2 id="hPublish">자료 최종 공개</h2>
+    <section class="card" aria-labelledby="hNotice"><span class="step">15</span><h2 id="hNotice">공지 전송</h2>
+      <label class="field">공지 문구<textarea id="noticeText" maxlength="160" placeholder="예: 10분 뒤 수업 재개"></textarea></label>
+      <div class="row"><button type="button" class="btn" id="noticeSend">공지 보내기</button><button type="button" class="btn ghost" id="noticeClose">공지 닫기</button></div>
+      <!-- 서버 연결 지점: PATCH /api/classes/{id}/notice -->
+      <p class="server-note">서버 저장: noticeText · noticeVisible · noticeUpdatedAt</p>
+    </section>
+
+    <section class="card" aria-labelledby="hPublish"><span class="step">16</span><h2 id="hPublish">자료 최종 공개</h2>
       <div class="switchrow"><p id="swMaterialsPublishedDesc"><b>전체 자료 공개</b>수업 뒤 자료 묶음 공개</p><div class="sw-wrap"><span class="sw-state" id="swMaterialsPublishedState">OFF</span><div class="switch" id="swMaterialsPublished" role="switch" aria-checked="false" tabindex="0" aria-labelledby="swMaterialsPublishedDesc"></div></div></div>
       <div class="row"><button type="button" class="btn" id="publishAll">전체 공개</button></div>
       <!-- 서버 연결 지점: PATCH /api/classes/{id}/materials -->
       <p class="server-note">서버 저장: materialsPublished · publishedAt · pdf · promptOpen</p>
     </section>
 
-    <section class="card" aria-labelledby="hEnd"><span class="step">15</span><h2 id="hEnd">수업 종료</h2>
+    <section class="card" aria-labelledby="hEnd"><span class="step">17</span><h2 id="hEnd">수업 종료</h2>
       <p class="note">마침 슬라이드 이동 · 동기화 상태 종료</p>
       <div class="row"><button type="button" class="btn ghost" id="goEnd">마침 슬라이드</button><button type="button" class="btn" id="classEnd">수업 종료</button></div>
       <!-- 서버 연결 지점: PATCH /api/classes/{id}/state -->
       <p class="server-note">서버 저장: classStatus · endedAt · slide · locked</p>
     </section>
 
-    <section class="card wide" aria-labelledby="hRecord"><span class="step">16</span><h2 id="hRecord">수업 기록</h2>
+    <section class="card wide" aria-labelledby="hRecord"><span class="step">18</span><h2 id="hRecord">수업 기록</h2>
       <div class="metrics"><div class="metric"><span>최대 접속</span><b id="rPeak">0명</b></div><div class="metric"><span>완료 인원</span><b id="rCompleted">0명</b></div><div class="metric"><span>질문</span><b id="rQuestions">0건</b></div></div>
       <div class="row"><button type="button" class="btn" id="downloadCsv">CSV 받기</button><button type="button" class="btn ghost" id="viewLog">최근 기록 보기</button></div>
       <p class="note" id="logPreview">기록 없음</p>
@@ -241,22 +257,22 @@ table{border:3px solid #111!important;box-shadow:var(--hard)!important}th{backgr
 
 <script>
 (function(){
-  var LS = 'chuseok0927_';
+  var LS = 'notebooklm0930_';
   var STATE_KEY = LS + 'admin';
   var AUTH_KEY = LS + 'admin_ok';
-  var TITLES = ['표지','오늘의 결과물','오늘의 순서','완성작 미리보기','선화 영상의 특징','전체 제작 흐름','수업 준비물','Codex의 역할','화이트보드 스킬','전역 설치 명령어','설치 상태 확인','프로젝트 폴더','추석 인사말 구조','대상별 인사말','영상 길이 설계','SRT 자막 구조','SRT 작성 프롬프트','실습 1 · 대본과 전략','휴식','단계별 확인 관문','선화 시각 규범','선화 생성 프롬프트','선화 검수 기준','영역 주석의 개념','서사 순서','주석 데이터','미리보기 편집대','장면 타이밍','스트림 필적','영상 렌더링','자막 번인','내레이션 합성','다중 장면 병합','실습 2 · 완성본 제작','최종 품질 검사','마침과 활용'];
-  var BREAKS = [18];
+  var TITLES = ['표지','강의 순서','학습 목표','노트북LM 개념','활용 장점','새 노트북','유튜브 소스 추가','소스 추가 실습','첫 질문','출처 확인','핵심 활용 가이드','소스 수집과 정리','맞춤 대화와 생성','디지털 브레인 자료','짧은 휴식','요약과 핵심 질문','퀴즈 생성','음성 학습 자료','동영상 설명','BananaNL 소개와 설치','핵심 정리와 마침'];
+  var BREAKS = [14];
   var TOTAL = TITLES.length;
   var tickId = null;
 
   function timerSeed(minutes){return{minutes:minutes,remaining:minutes*60,endAt:null,running:false};}
   function seed(){return{
-    title:'바이브코딩으로 추석 인사말 선화 영상 만들기',startAt:'2026-09-30T20:00',expectedViewers:20,classMode:'online',materialsTiming:'after',
-    slidesOpen:false,pdf:true,practiceOpen:false,locked:true,copyAllowed:true,promptOpen:false,questionsOpen:false,reviewsOpen:false,materialsPublished:false,
+    title:'노트북LM 마스터하기',startAt:'',expectedViewers:10,classMode:'online',materialsTiming:'during',
+    practiceEnabled:true,slidesOpen:false,pdf:true,practiceOpen:false,locked:true,copyAllowed:true,promptOpen:false,questionsOpen:false,reviewsOpen:false,materialsPublished:false,
     connected:false,viewerCount:0,peakViewerCount:0,lastConnectedAt:null,classStatus:'준비',startedAt:null,endedAt:null,slide:0,practiceStatus:'대기',practiceStartedAt:null,
     practiceCompletedCount:0,helpRequests:0,practiceTimer:timerSeed(15),breakTimer:timerSeed(10),noticeText:'',noticeVisible:false,noticeUpdatedAt:null,publishedAt:null,
-    questions:[{id:'q1',text:'완성 영상은 휴대폰에서도 만들 수 있나요?',approved:false,answered:false},{id:'q2',text:'내레이션 목소리를 바꿀 수 있나요?',approved:true,answered:false}],
-    reviews:[{id:'r1',star:5,text:'실습 순서가 분명해 따라가기 편함',approved:true},{id:'r2',star:4,text:'다음에는 배포까지 직접 해보고 싶음',approved:false}],
+    questions:[{id:'q1',text:'유튜브 소스가 추가되지 않을 때 어떻게 하나요?',approved:false,answered:false},{id:'q2',text:'답변의 출처 원문은 어디에서 확인하나요?',approved:true,answered:false}],
+    reviews:[{id:'r1',star:5,text:'자료 추가부터 퀴즈 생성까지 흐름이 분명함',approved:true},{id:'r2',star:4,text:'업무 자료에도 바로 적용해 보고 싶음',approved:false}],
     sessionLog:[]
   };}
   function storageAlert(text){if(storageAlert.last===text)return;storageAlert.last=text;setTimeout(function(){say(text);},0);setTimeout(function(){storageAlert.last='';},2000);}
