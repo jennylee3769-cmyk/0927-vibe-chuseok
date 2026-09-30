@@ -591,13 +591,12 @@ blockquote,.prompt{border:.3cqi solid #F6C744!important;border-radius:0!importan
   </form>
 </div>
 
-<script src="firebase/firebase-config.js"></script>
+<script src="firebase/firebase-config.js?v=0930"></script>
 <script type="module">
 import { isConfigured, createSync } from './firebase/firebase-sync.js';
 
 (function(){
-  /* ▼ 내 강의 고유 접두사로 변경 (예: 'ai0927_') */
-  var LS = 'chuseok0927_';
+  var LS = 'notebooklm0930_';
 
   var stage = document.getElementById('stage');
   var slides = Array.prototype.slice.call(stage.querySelectorAll(':scope > section.slide'));
@@ -749,7 +748,7 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
     if (WANT_ADMIN) IS_ADMIN = true;
     updateNav();
   } else if (!IS_VIEW) {
-    sync = createSync(window.FIREBASE_CONFIG, window.DECK_ID || 'vibe-chuseok-0927');
+    sync = createSync(window.FIREBASE_CONFIG, window.DECK_ID || 'notebooklm-0930');
     var lastState = null;
     var viewersOn = false;
     function renderConnection(){
