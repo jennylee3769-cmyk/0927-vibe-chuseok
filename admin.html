@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>관리자 제어판 · 노트북LM 마스터하기</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#2457FF">
+<meta name="theme-color" content="#070812">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -98,6 +98,32 @@ header h1{text-shadow:3px 3px 0 var(--v-black)}
 #gate{background:var(--v-blue)}#gate>form{box-shadow:14px 14px 0 var(--v-pink)!important}#gate .btn{background:var(--v-yellow);color:var(--v-black)}
 #status{background:var(--v-pink);color:var(--v-black);border:3px solid var(--v-black)}
 @media(max-width:720px){body{background:var(--v-yellow)}.card{box-shadow:7px 7px 0 var(--v-black)!important}}
+</style>
+<style id="cyberpunk-theme">
+/* 사이버펑크 UI: 네온 운영 패널과 어두운 제어 화면 */
+:root{--cy-void:#070812;--cy-ink:#F5F7FF;--cy-muted:#B6BFDC;--cy-panel:#0D1021;--cy-panel-2:#151833;--cy-cyan:#00F5FF;--cy-magenta:#FF2BD6;--cy-acid:#B8FF00;--cy-line:#30385F;--accent:var(--cy-cyan)}
+body{background:var(--cy-void);color:var(--cy-ink);background-image:linear-gradient(rgba(0,245,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,43,214,.05) 1px,transparent 1px);background-size:32px 32px}
+header{background:rgba(7,8,18,.96)!important;color:var(--cy-ink);border-bottom:2px solid var(--cy-cyan);box-shadow:0 8px 28px rgba(0,245,255,.18)!important}
+header h1{color:var(--cy-ink);text-shadow:-2px 0 0 rgba(255,43,214,.9),2px 0 0 rgba(0,245,255,.9)}
+.demo-badge{background:var(--cy-panel-2);color:var(--cy-cyan);border:1px solid var(--cy-cyan);box-shadow:0 0 14px rgba(0,245,255,.35)!important}
+.summary{background:rgba(13,16,33,.96)!important;border:1px solid var(--cy-line);box-shadow:0 0 24px rgba(255,43,214,.18)!important}.summary::before{background:var(--cy-magenta);color:var(--cy-void)}
+.summary div:nth-of-type(n){background:var(--cy-panel-2);color:var(--cy-ink);border:1px solid var(--cy-line)}.summary div:nth-of-type(odd){border-top:3px solid var(--cy-cyan)}.summary div:nth-of-type(even){border-top:3px solid var(--cy-magenta)}
+.card{background:rgba(13,16,33,.97);color:var(--cy-ink);border-color:var(--cy-line)!important;box-shadow:0 0 0 1px rgba(0,245,255,.1),10px 10px 0 rgba(0,245,255,.12)!important}
+.card:nth-child(4n+1){border-top:5px solid var(--cy-cyan)!important}.card:nth-child(4n+2){border-top:5px solid var(--cy-magenta)!important}.card:nth-child(4n+3){border-top:5px solid var(--cy-acid)!important}.card:nth-child(4n){border-top:5px solid #8A7DFF!important}
+.card:hover{box-shadow:0 0 28px rgba(0,245,255,.22)!important}
+.card p,.card li,.muted{color:var(--cy-muted)}
+.step{background:var(--cy-panel-2);color:var(--cy-cyan);border-color:var(--cy-cyan);box-shadow:0 0 12px rgba(0,245,255,.25)!important}
+.btn{background:var(--cy-cyan);color:var(--cy-void);border-color:var(--cy-cyan);box-shadow:0 0 14px rgba(0,245,255,.4)!important}.btn.ghost{background:var(--cy-panel-2);color:var(--cy-magenta);border-color:var(--cy-magenta);box-shadow:0 0 12px rgba(255,43,214,.28)!important}
+.policy{background:#101C1B;color:var(--cy-ink);border-color:var(--cy-acid)}.metric{background:#090B19;color:var(--cy-ink);border:1px solid var(--cy-line)}
+.jump button{background:var(--cy-panel-2);color:var(--cy-ink);border-color:var(--cy-line)}.jump button[aria-current="true"]{background:var(--cy-magenta);color:var(--cy-void);box-shadow:0 0 12px rgba(255,43,214,.42)}
+.switch{background:var(--cy-panel-2);border-color:var(--cy-line)}.switch[aria-checked="true"]{background:var(--cy-cyan);box-shadow:0 0 14px rgba(0,245,255,.42)}
+input,select,textarea{background:#090B19!important;color:var(--cy-ink)!important;border-color:var(--cy-line)!important}
+#gate{background:radial-gradient(circle at 20% 20%,rgba(255,43,214,.28),transparent 36%),radial-gradient(circle at 80% 80%,rgba(0,245,255,.22),transparent 36%),var(--cy-void)}#gate>form{background:var(--cy-panel)!important;color:var(--cy-ink)!important;border:1px solid var(--cy-cyan)!important;box-shadow:0 0 30px rgba(0,245,255,.32)!important}#gate .btn{background:var(--cy-magenta);color:var(--cy-void);border-color:var(--cy-magenta);box-shadow:0 0 16px rgba(255,43,214,.42)!important}
+#status{background:var(--cy-panel-2);color:var(--cy-cyan);border:1px solid var(--cy-cyan);box-shadow:0 0 12px rgba(0,245,255,.28)}
+@keyframes cyber-glitch{0%,100%{transform:translate(0)}18%{transform:translate(-2px,1px)}36%{transform:translate(2px,-1px)}54%{transform:translate(-1px,-1px)}72%{transform:translate(1px,1px)}}
+@media (prefers-reduced-motion:no-preference){header h1{animation:cyber-glitch .72s steps(2,end) 1 both}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}header h1{animation:none!important;transform:none!important}}
+@media(max-width:720px){body{background-color:var(--cy-void)}.card{box-shadow:0 0 0 1px rgba(0,245,255,.1),6px 6px 0 rgba(0,245,255,.12)!important}}
 </style>
 </head>
 <body>

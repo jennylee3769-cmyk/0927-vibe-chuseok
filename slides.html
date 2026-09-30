@@ -22,7 +22,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="노트북LM 마스터하기 강의 대표 이미지">
-<meta name="theme-color" content="#2457FF">
+<meta name="theme-color" content="#070812">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -266,6 +266,35 @@ blockquote,.prompt{background:var(--v-black)!important;color:var(--v-white)!impo
 .fb-banner{background:var(--v-pink);color:var(--v-black)}
 .instructor-panel{box-shadow:10px 10px 0 var(--v-pink)}.instructor-row button.policy-on{background:var(--v-lime)}
 @media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important}}
+</style>
+<style id="cyberpunk-theme">
+/* 사이버펑크 UI: 네온 시안·마젠타, 어두운 슬라이드, 짧은 글리치 */
+:root{--cy-void:#070812;--cy-ink:#F5F7FF;--cy-muted:#B6BFDC;--cy-panel:#0D1021;--cy-panel-2:#151833;--cy-cyan:#00F5FF;--cy-magenta:#FF2BD6;--cy-acid:#B8FF00;--cy-line:#30385F}
+body{background:var(--cy-void);background-image:linear-gradient(rgba(0,245,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,43,214,.045) 1px,transparent 1px);background-size:32px 32px;color:var(--cy-ink)}
+#stage{border-color:var(--cy-cyan);box-shadow:0 0 2.2cqi rgba(0,245,255,.28)}
+#stage>.slide,#stage>.slide:nth-of-type(n){background:radial-gradient(circle at 90% 10%,rgba(255,43,214,.14),transparent 30%),radial-gradient(circle at 10% 90%,rgba(0,245,255,.12),transparent 32%),var(--cy-void)!important;color:var(--cy-ink)}
+#stage>.slide:nth-of-type(even){background:radial-gradient(circle at 82% 18%,rgba(0,245,255,.16),transparent 30%),radial-gradient(circle at 14% 84%,rgba(255,43,214,.12),transparent 32%),#090B19!important}
+#stage>.title-slide{background:radial-gradient(circle at 20% 20%,rgba(255,43,214,.34),transparent 36%),radial-gradient(circle at 82% 76%,rgba(0,245,255,.25),transparent 36%),var(--cy-void)!important;color:var(--cy-ink)}
+#stage>.title-slide:last-of-type{background:radial-gradient(circle at 25% 70%,rgba(0,245,255,.25),transparent 36%),radial-gradient(circle at 80% 22%,rgba(255,43,214,.32),transparent 36%),var(--cy-void)!important;color:var(--cy-ink)}
+.slide h2,#stage>.slide:nth-of-type(n) h2{color:var(--cy-ink);text-shadow:-.16cqi 0 0 rgba(255,43,214,.78),.16cqi 0 0 rgba(0,245,255,.78)}
+.title-slide h1,.title-slide:last-of-type h1{color:var(--cy-ink)!important;text-shadow:-.28cqi 0 0 rgba(255,43,214,.92),.28cqi 0 0 rgba(0,245,255,.9),0 0 1.5cqi rgba(0,245,255,.28)!important}
+.slide::after{background:var(--cy-panel-2);color:var(--cy-cyan);border:.08cqi solid var(--cy-cyan);box-shadow:0 0 .8cqi rgba(0,245,255,.35)}
+.kicker{display:inline-flex;align-self:flex-start;background:rgba(13,16,33,.94);color:var(--cy-cyan)!important;padding:.42cqi .72cqi;border:.08cqi solid var(--cy-cyan);box-shadow:0 0 .9cqi rgba(0,245,255,.3)}
+.title-slide .lede,.title-slide:last-of-type .lede{color:var(--cy-muted)!important}.title-slide .meta-row span{background:var(--cy-panel-2);color:var(--cy-ink);border-color:var(--cy-line);box-shadow:.22cqi .22cqi 0 rgba(255,43,214,.4)}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:rgba(13,16,33,.95)!important;color:var(--cy-ink)!important;border-color:var(--cy-line)!important;box-shadow:0 0 0 .08cqi rgba(0,245,255,.12),.52cqi .52cqi 0 rgba(0,245,255,.14)!important}
+.card.good{background:rgba(16,32,28,.96)!important;border-color:var(--cy-acid)!important}.card:nth-child(3n+2){box-shadow:0 0 0 .08cqi rgba(255,43,214,.18),.52cqi .52cqi 0 rgba(255,43,214,.18)!important}.card:nth-child(3n){box-shadow:0 0 0 .08cqi rgba(184,255,0,.14),.52cqi .52cqi 0 rgba(184,255,0,.14)!important}
+.card p,.feature p,.flow-item p,.step p,.metric p,.panel p,.mini p{color:var(--cy-muted)}
+blockquote,.prompt{background:#03040A!important;color:var(--cy-ink)!important;border-color:var(--cy-magenta)!important;box-shadow:0 0 1.05cqi rgba(255,43,214,.32)!important}
+.copy{background:var(--cy-cyan)!important;color:var(--cy-void)!important;box-shadow:0 0 .7cqi rgba(0,245,255,.42)}
+.dark{background:#03040A!important;color:var(--cy-ink)!important}.dark .timer{color:var(--cy-acid);text-shadow:0 0 .8cqi rgba(184,255,0,.5)}
+#nav{background:rgba(3,4,10,.96);border-color:var(--cy-line);box-shadow:0 0 1.1cqi rgba(255,43,214,.28)!important}#nav button{color:var(--cy-cyan)}.control-fab{background:var(--cy-magenta)!important;color:var(--cy-void)!important;box-shadow:0 0 .8cqi rgba(255,43,214,.5)}
+.fb-banner{background:var(--cy-panel-2);color:var(--cy-cyan);border-color:var(--cy-cyan)}
+.instructor-panel{background:var(--cy-panel)!important;color:var(--cy-ink);border-color:var(--cy-magenta);box-shadow:0 0 24px rgba(255,43,214,.26)}.instructor-row button.policy-on{background:var(--cy-acid);color:var(--cy-void)}
+.login-modal>div,.modal-card{background:var(--cy-panel)!important;color:var(--cy-ink)!important;border:1px solid var(--cy-cyan)!important;box-shadow:0 0 28px rgba(0,245,255,.3)!important}input{background:#090B19!important;color:var(--cy-ink)!important;border-color:var(--cy-line)!important}
+@keyframes cyber-glitch{0%,100%{transform:translate(0)}18%{transform:translate(-.16cqi,.08cqi)}36%{transform:translate(.16cqi,-.08cqi)}54%{transform:translate(-.08cqi,-.08cqi)}72%{transform:translate(.08cqi,.08cqi)}}
+@media (prefers-reduced-motion:no-preference){.title-slide h1{animation:cyber-glitch .72s steps(2,end) 1 both}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.title-slide h1{animation:none!important;transform:none!important}}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head>
 <body>
@@ -587,7 +616,7 @@ blockquote,.prompt{background:var(--v-black)!important;color:var(--v-white)!impo
 <nav id="nav" aria-label="슬라이드 이동">
   <a href="index.html" target="_blank" rel="noopener" class="hide-sm" aria-label="강의 홈 새 창으로 열기">⌂ 홈</a>
   <button type="button" id="navPrev" aria-label="이전 슬라이드">◀</button>
-  <span id="counter" aria-live="polite">1 / 36</span>
+  <span id="counter" aria-live="polite">1 / 21</span>
   <button type="button" id="navNext" aria-label="다음 슬라이드">▶</button>
   <span id="modeBadge"></span>
   <span id="connBadge" class="conn" hidden></span>
@@ -603,7 +632,7 @@ blockquote,.prompt{background:var(--v-black)!important;color:var(--v-white)!impo
 <aside class="instructor-panel" id="instructorPanel" hidden aria-label="강사 제어 패널">
   <div class="instructor-head"><h2>강사 제어</h2><button type="button" id="controlClose" aria-label="강사 제어 닫기">✕</button></div>
   <div class="instructor-status">
-    <div><small>현재 장</small><strong id="ctlSlide">1 / 36</strong></div>
+    <div><small>현재 장</small><strong id="ctlSlide">1 / 21</strong></div>
     <div><small>청중</small><strong id="ctlViewers">-</strong></div>
     <div><small>연결</small><strong id="ctlConnection">로컬</strong></div>
   </div>

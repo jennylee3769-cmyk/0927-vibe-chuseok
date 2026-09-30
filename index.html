@@ -10,7 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>노트북LM 마스터하기 | 내 자료로 만드는 AI 학습 도우미</title>
 <meta name="description" content="성인 초급자를 위한 60분 실습 강의. 자료 추가, 질문, 출처 확인, 요약과 퀴즈 제작 실습.">
-<meta name="theme-color" content="#2457FF">
+<meta name="theme-color" content="#070812">
 <!-- 카카오톡·SNS 공유 미리보기 · og:image는 1200x630 이미지 절대 주소 -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="노트북LM 마스터하기 | 내 자료로 만드는 AI 학습 도우미">
@@ -196,6 +196,38 @@ main section::after{background:var(--v-yellow);box-shadow:4px 4px 0 var(--v-blac
 footer{background:var(--v-black);color:var(--v-white);border-top:10px solid var(--v-pink)}
 .chaos-progress{background:var(--v-lime)}
 @media(max-width:640px){main section{box-shadow:8px 8px 0 var(--v-black);margin-inline:6px}.hero h1{text-shadow:4px 4px 0 var(--v-black)!important}}
+</style>
+<style id="cyberpunk-theme">
+/* 사이버펑크 UI: 네온 시안·마젠타, 어두운 패널, 짧은 글리치 */
+:root{--cy-void:#070812;--cy-ink:#F5F7FF;--cy-muted:#B6BFDC;--cy-panel:#0D1021;--cy-panel-2:#151833;--cy-cyan:#00F5FF;--cy-magenta:#FF2BD6;--cy-acid:#B8FF00;--cy-line:#30385F}
+html{scrollbar-color:var(--cy-magenta) var(--cy-void)}
+body{background:var(--cy-void);color:var(--cy-ink);background-image:linear-gradient(rgba(0,245,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,43,214,.05) 1px,transparent 1px);background-size:32px 32px}
+body::before{background:var(--cy-panel);color:var(--cy-cyan);border:1px solid var(--cy-cyan);box-shadow:0 0 18px rgba(0,245,255,.45);text-shadow:0 0 8px var(--cy-cyan)}
+.hero{background:radial-gradient(circle at 18% 20%,rgba(255,43,214,.3),transparent 34%),radial-gradient(circle at 85% 72%,rgba(0,245,255,.24),transparent 33%),var(--cy-void)!important;color:var(--cy-ink)!important;border-bottom:2px solid var(--cy-cyan);box-shadow:0 12px 34px rgba(0,245,255,.2)}
+.hero::before{-webkit-text-stroke:1px rgba(0,245,255,.2);color:transparent}
+.hero h1{color:var(--cy-ink)!important;text-shadow:-3px 0 0 rgba(255,43,214,.92),3px 0 0 rgba(0,245,255,.88),0 0 22px rgba(0,245,255,.35)!important}
+.hero .kicker,.hero .eyebrow{background:rgba(13,16,33,.88)!important;color:var(--cy-cyan)!important;border:1px solid var(--cy-cyan);box-shadow:0 0 14px rgba(0,245,255,.35);padding:8px 12px}
+.hero .lead{background:rgba(13,16,33,.88);color:var(--cy-ink);border:1px solid var(--cy-magenta);box-shadow:0 0 24px rgba(255,43,214,.2)}
+.meta span{background:var(--cy-panel-2);color:var(--cy-ink);border:1px solid var(--cy-line);border-radius:0;box-shadow:3px 3px 0 rgba(255,43,214,.42)}
+.btn{border-color:currentColor!important}.btn.primary{background:var(--cy-cyan)!important;color:var(--cy-void)!important;box-shadow:0 0 18px rgba(0,245,255,.45)!important}.btn.ghost{background:var(--cy-panel-2)!important;color:var(--cy-magenta)!important;border-color:var(--cy-magenta)!important;box-shadow:0 0 16px rgba(255,43,214,.3)!important}
+main section,main section:nth-child(n){background:linear-gradient(145deg,rgba(21,24,51,.96),rgba(7,8,18,.98));color:var(--cy-ink);border:1px solid var(--cy-line);box-shadow:0 0 0 1px rgba(0,245,255,.12),12px 12px 0 rgba(255,43,214,.12)}
+main section:nth-child(odd){border-top:4px solid var(--cy-cyan)}main section:nth-child(even){border-top:4px solid var(--cy-magenta)}
+main section:nth-child(n)>h2,main section:nth-child(n)>.sec-kicker{color:var(--cy-ink)!important}.sec-kicker{color:var(--cy-cyan)!important;text-shadow:0 0 10px rgba(0,245,255,.55)}
+main section h2,main section h3,main section h4{color:var(--cy-ink)!important}.card strong,.resource strong,.entry strong,.pitem strong,.tbl th{color:var(--cy-ink)}
+main section::after{background:var(--cy-panel-2);color:var(--cy-cyan);border:1px solid var(--cy-cyan);box-shadow:0 0 12px rgba(0,245,255,.28)}
+.card,.resource,.pitem,.entry,.profile,table.tbl{background:rgba(13,16,33,.94);color:var(--cy-ink);border-color:var(--cy-line);box-shadow:0 0 0 1px rgba(0,245,255,.1),7px 7px 0 rgba(0,245,255,.14)!important}
+.card:nth-child(3n+1) .n,.pitem:nth-child(3n+1) .pt::before{color:var(--cy-cyan)}.card:nth-child(3n+2) .n,.pitem:nth-child(3n+2) .pt::before{color:var(--cy-magenta)}.card:nth-child(3n) .n,.pitem:nth-child(3n) .pt::before{color:var(--cy-acid)}
+.entry:hover,.card:hover,.resource:hover,.pitem:hover{border-color:var(--cy-cyan);box-shadow:0 0 24px rgba(0,245,255,.26)!important}
+.profile-photo{background:linear-gradient(145deg,var(--cy-magenta),var(--cy-cyan))}.profile .role{background:var(--cy-acid);color:var(--cy-void)}
+.pitem .px{background:#090B19;color:var(--cy-ink);border-left-color:var(--cy-cyan)}
+.pbtn{background:var(--cy-magenta)!important;color:var(--cy-void)!important;box-shadow:0 0 16px rgba(255,43,214,.35)!important}.pbtn.ghost{background:var(--cy-panel-2)!important;color:var(--cy-cyan)!important;border-color:var(--cy-cyan)!important}
+.tbl th,.tbl td{border-color:var(--cy-line)}.resource p,.card p,.profile p,.pitem p,.entry p{color:var(--cy-muted)}
+footer{background:#03040A;color:var(--cy-muted);border-top:2px solid var(--cy-magenta);box-shadow:0 -8px 24px rgba(255,43,214,.15)}
+.chaos-progress{background:linear-gradient(90deg,var(--cy-magenta),var(--cy-cyan));box-shadow:0 0 14px var(--cy-cyan)}
+@keyframes cyber-glitch{0%,100%{transform:translate(0)}18%{transform:translate(-2px,1px)}36%{transform:translate(2px,-1px)}54%{transform:translate(-1px,-1px)}72%{transform:translate(1px,1px)}}
+@media (prefers-reduced-motion:no-preference){.hero h1{animation:cyber-glitch .72s steps(2,end) 1 both}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.hero h1{animation:none!important;transform:none!important}}
+@media(max-width:640px){main section{box-shadow:0 0 0 1px rgba(0,245,255,.12),7px 7px 0 rgba(255,43,214,.12);margin-inline:6px}.hero h1{text-shadow:-2px 0 0 rgba(255,43,214,.9),2px 0 0 rgba(0,245,255,.9)!important}}
 </style>
 </head>
 <body>
