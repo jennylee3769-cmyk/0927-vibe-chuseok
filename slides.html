@@ -22,7 +22,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="노트북LM 마스터하기 강의 대표 이미지">
-<meta name="theme-color" content="#070812">
+<meta name="theme-color" content="#D8CBFF">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -294,6 +294,57 @@ blockquote,.prompt{background:#03040A!important;color:var(--cy-ink)!important;bo
 @keyframes cyber-glitch{0%,100%{transform:translate(0)}18%{transform:translate(-.16cqi,.08cqi)}36%{transform:translate(.16cqi,-.08cqi)}54%{transform:translate(-.08cqi,-.08cqi)}72%{transform:translate(.08cqi,.08cqi)}}
 @media (prefers-reduced-motion:no-preference){.title-slide h1{animation:cyber-glitch .72s steps(2,end) 1 both}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.title-slide h1{animation:none!important;transform:none!important}}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<style id="brutalism-theme">
+/* 브루탈리즘: 거친 원색 면, 굵은 검정선, 무가공 오프셋 그림자 */
+:root{--br-paper:#F3F0E8;--br-ink:#0A0A0A;--br-red:#FF3B30;--br-blue:#265DFF;--br-yellow:#FFD600;--br-green:#00C853;--br-white:#FFFFFF}
+body{background:var(--br-paper);background-image:none;color:var(--br-ink)}
+#stage{border:6px solid var(--br-ink);box-shadow:1cqi 1cqi 0 var(--br-ink)}
+#stage>.slide,#stage>.slide:nth-of-type(n){background:var(--br-paper)!important;color:var(--br-ink)}
+#stage>.slide:nth-of-type(4n+2){background:var(--br-blue)!important;color:var(--br-white)}
+#stage>.slide:nth-of-type(4n+3){background:var(--br-red)!important;color:var(--br-ink)}
+#stage>.slide:nth-of-type(4n){background:var(--br-yellow)!important;color:var(--br-ink)}
+#stage>.title-slide{background:var(--br-yellow)!important;color:var(--br-ink)}#stage>.title-slide:last-of-type{background:var(--br-red)!important;color:var(--br-ink)}
+.slide h2,#stage>.slide:nth-of-type(n) h2{color:inherit;text-shadow:none}.title-slide h1,.title-slide:last-of-type h1{color:var(--br-ink)!important;text-shadow:.42cqi .42cqi 0 var(--br-white)!important;animation:none!important;transform:none!important}
+.slide::after{background:var(--br-white);color:var(--br-ink);border:.24cqi solid var(--br-ink);box-shadow:.34cqi .34cqi 0 var(--br-ink)}
+.kicker{background:var(--br-ink);color:var(--br-white)!important;border:.24cqi solid var(--br-ink);box-shadow:.34cqi .34cqi 0 var(--br-white)}
+.title-slide .lede,.title-slide:last-of-type .lede{color:var(--br-ink)!important}.title-slide .meta-row span{background:var(--br-white);color:var(--br-ink);border:.2cqi solid var(--br-ink);border-radius:0;box-shadow:.3cqi .3cqi 0 var(--br-ink)}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:var(--br-white)!important;color:var(--br-ink)!important;border:.28cqi solid var(--br-ink)!important;border-radius:0!important;box-shadow:.56cqi .56cqi 0 var(--br-ink)!important}
+.card.good{background:var(--br-green)!important;border-color:var(--br-ink)!important}.card:nth-child(3n+2){box-shadow:.56cqi .56cqi 0 var(--br-yellow)!important}.card:nth-child(3n){box-shadow:.56cqi .56cqi 0 var(--br-blue)!important}
+.card p,.feature p,.flow-item p,.step p,.metric p,.panel p,.mini p{color:var(--br-ink)}
+blockquote,.prompt{background:var(--br-ink)!important;color:var(--br-white)!important;border:.28cqi solid var(--br-ink)!important;box-shadow:.6cqi .6cqi 0 var(--br-yellow)!important;border-radius:0!important}
+.copy{background:var(--br-yellow)!important;color:var(--br-ink)!important;border:.2cqi solid var(--br-white);box-shadow:.3cqi .3cqi 0 var(--br-red)}
+.dark{background:var(--br-ink)!important;color:var(--br-white)!important}.dark .timer{color:var(--br-yellow);text-shadow:none}
+#nav{background:var(--br-ink);border-color:var(--br-ink);box-shadow:0 -.4cqi 0 var(--br-red)!important}#nav button,#nav a{color:var(--br-white);border-radius:0!important}.control-fab{background:var(--br-yellow)!important;color:var(--br-ink)!important;box-shadow:.35cqi .35cqi 0 var(--br-red)}
+.fb-banner{background:var(--br-red);color:var(--br-white);border:3px solid var(--br-ink)}
+.instructor-panel{background:var(--br-white)!important;color:var(--br-ink);border:5px solid var(--br-ink);box-shadow:10px 10px 0 var(--br-blue)}.instructor-row button.policy-on{background:var(--br-green);color:var(--br-ink)}
+.login-modal>div,.modal-card{background:var(--br-white)!important;color:var(--br-ink)!important;border:5px solid var(--br-ink)!important;box-shadow:12px 12px 0 var(--br-blue)!important}input{background:var(--br-white)!important;color:var(--br-ink)!important;border:3px solid var(--br-ink)!important;border-radius:0!important}
+*:focus-visible{outline:.3cqi solid var(--br-red)!important;outline-offset:.2cqi}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<style id="claymorphism-theme">
+/* 클레이모피즘: 파스텔 찰흙 면, 둥근 팽창형 카드, 부드러운 입체감 */
+:root{--clay-bg:#FFF4E8;--clay-ink:#3D3563;--clay-purple:#D8CBFF;--clay-blue:#A7D8FF;--clay-pink:#FFB6D5;--clay-mint:#BFEBD7;--clay-yellow:#FFE58A;--clay-white:#FFFDFC;--clay-shadow:#B9A9CF}
+body{background:var(--clay-bg);background-image:radial-gradient(circle at 10% 18%,rgba(255,182,213,.5) 0 4rem,transparent 4.1rem),radial-gradient(circle at 90% 78%,rgba(167,216,255,.52) 0 6rem,transparent 6.1rem);color:var(--clay-ink)}
+#stage{border:.35cqi solid rgba(255,255,255,.75);border-radius:2.1cqi;box-shadow:inset .5cqi .5cqi 1cqi rgba(255,255,255,.72),inset -.55cqi -.65cqi 1.1cqi rgba(92,74,125,.11),0 1.1cqi 2.2cqi rgba(88,66,116,.2);overflow:hidden}
+#stage>.slide,#stage>.slide:nth-of-type(n){background:var(--clay-bg)!important;color:var(--clay-ink)}
+#stage>.slide:nth-of-type(4n+2){background:#DDEEFF!important;color:var(--clay-ink)}#stage>.slide:nth-of-type(4n+3){background:#FFE1ED!important;color:var(--clay-ink)}#stage>.slide:nth-of-type(4n){background:#DDF3E8!important;color:var(--clay-ink)}
+#stage>.slide.title-slide{background:linear-gradient(145deg,var(--clay-purple),var(--clay-blue))!important;color:var(--clay-ink)}#stage>.slide.title-slide:last-of-type{background:linear-gradient(145deg,var(--clay-pink),var(--clay-yellow))!important;color:var(--clay-ink)}
+.slide h2,#stage>.slide:nth-of-type(n) h2{color:var(--clay-ink);text-shadow:0 .24cqi 0 rgba(255,255,255,.78)}.title-slide h1,.title-slide:last-of-type h1{color:var(--clay-ink)!important;text-shadow:0 .34cqi 0 rgba(255,255,255,.82),0 .75cqi 1.2cqi rgba(80,60,108,.16)!important;animation:none!important;transform:none!important}
+.slide::after{background:var(--clay-yellow);color:var(--clay-ink);border:0;border-radius:999px;box-shadow:inset .24cqi .24cqi .48cqi rgba(255,255,255,.8),inset -.28cqi -.34cqi .52cqi rgba(124,94,55,.13),0 .42cqi .72cqi rgba(82,61,107,.17)}
+.kicker{background:var(--clay-pink);color:var(--clay-ink)!important;border:0;border-radius:999px;box-shadow:inset .3cqi .3cqi .6cqi rgba(255,255,255,.82),inset -.32cqi -.4cqi .62cqi rgba(130,73,107,.13),0 .45cqi .78cqi rgba(83,62,109,.17)}
+.title-slide .lede,.title-slide:last-of-type .lede{color:var(--clay-ink)!important}.title-slide .meta-row span{background:rgba(255,253,252,.82);color:var(--clay-ink);border:0;border-radius:999px;box-shadow:inset .25cqi .25cqi .5cqi #fff,inset -.3cqi -.36cqi .55cqi rgba(92,75,127,.11),0 .4cqi .7cqi rgba(83,62,109,.14)}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:var(--clay-white)!important;color:var(--clay-ink)!important;border:0!important;border-radius:1.5cqi!important;box-shadow:inset .36cqi .36cqi .72cqi rgba(255,255,255,.92),inset -.42cqi -.5cqi .8cqi rgba(98,78,132,.11),0 .7cqi 1.2cqi rgba(88,66,116,.15)!important}
+.card.good{background:var(--clay-mint)!important}.card:nth-child(3n+2){background:#FFE1ED!important}.card:nth-child(3n){background:#E5DDFF!important}
+.card p,.feature p,.flow-item p,.step p,.metric p,.panel p,.mini p{color:var(--clay-ink)}
+blockquote,.prompt{background:#5A4B7C!important;color:var(--clay-white)!important;border:0!important;border-radius:1.4cqi!important;box-shadow:inset .3cqi .3cqi .65cqi rgba(255,255,255,.2),inset -.36cqi -.42cqi .72cqi rgba(35,22,60,.2),0 .7cqi 1.2cqi rgba(74,52,102,.2)!important}
+.copy{background:var(--clay-yellow)!important;color:var(--clay-ink)!important;border:0;border-radius:999px;box-shadow:inset .22cqi .22cqi .45cqi rgba(255,255,255,.8),0 .35cqi .6cqi rgba(70,52,94,.17)}
+.dark{background:#51456B!important;color:var(--clay-white)!important}.dark .timer{color:var(--clay-yellow);text-shadow:0 .28cqi 0 rgba(0,0,0,.14)}
+#nav{background:rgba(81,69,107,.96);border:0;border-radius:1.3cqi 1.3cqi 0 0;box-shadow:0 -.5cqi 1cqi rgba(74,55,97,.18)!important}#nav button,#nav a{color:var(--clay-white);border:0;border-radius:999px!important}.control-fab{background:var(--clay-pink)!important;color:var(--clay-ink)!important;box-shadow:inset .2cqi .2cqi .4cqi rgba(255,255,255,.8),0 .34cqi .6cqi rgba(70,52,94,.18)}
+.fb-banner{background:var(--clay-pink);color:var(--clay-ink);border:0;border-radius:999px}.instructor-panel{background:var(--clay-white)!important;color:var(--clay-ink);border:0;border-radius:28px;box-shadow:inset 5px 5px 10px #fff,inset -6px -7px 12px rgba(98,78,132,.12),0 14px 24px rgba(88,66,116,.18)}.instructor-row button.policy-on{background:var(--clay-mint);color:var(--clay-ink)}
+.login-modal>div,.modal-card{background:var(--clay-white)!important;color:var(--clay-ink)!important;border:0!important;border-radius:30px!important;box-shadow:inset 5px 5px 11px #fff,inset -6px -7px 12px rgba(98,78,132,.11),0 16px 28px rgba(88,66,116,.2)!important}input{background:#F6F1FF!important;color:var(--clay-ink)!important;border:0!important;border-radius:18px!important;box-shadow:inset 3px 3px 7px rgba(107,85,138,.13)}
+*:focus-visible{outline:.3cqi solid #6951A8!important;outline-offset:.22cqi}
 @media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head>
