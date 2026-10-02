@@ -12,10 +12,11 @@
         "state": {
           ".read": true,
           ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
-          ".validate": "newData.hasChildren(['slide', 'locked', 'pdf'])",
+          ".validate": "newData.hasChildren(['slide', 'locked', 'pdf', 'focus'])",
           "slide": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 1000" },
           "locked": { ".validate": "newData.isBoolean()" },
           "pdf": { ".validate": "newData.isBoolean()" },
+          "focus": { ".validate": "newData.isBoolean()" },
           "updatedAt": { ".validate": "newData.isNumber()" },
           "$other": { ".validate": false }
         },

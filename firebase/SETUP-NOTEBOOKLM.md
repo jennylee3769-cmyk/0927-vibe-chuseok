@@ -10,7 +10,7 @@
 - Realtime Database: `asia-southeast1` 생성 완료
 - Database URL: `https://notebooklm-6db7d-default-rtdb.asia-southeast1.firebasedatabase.app`
 - 이메일/비밀번호 로그인: 사용 설정 완료
-- Realtime Database 보안 규칙: 게시 완료
+- Realtime Database 보안 규칙: 기존 규칙 게시 완료 · 집중 필드 규칙 재게시 필요
 - 연결 설정 파일: `firebase/firebase-config.js`
 - 데이터베이스 규칙 파일: `firebase/database.rules.json`
 
@@ -50,7 +50,7 @@ admins
 }
 ```
 
-## 4. 보안 규칙 게시 - 완료
+## 4. 보안 규칙 재게시 - 집중 기능 추가
 
 1. Realtime Database → 규칙
 2. `firebase/database.rules.json` 전체 복사
@@ -59,8 +59,8 @@ admins
 
 규칙 효과:
 
-- 청중: 슬라이드 상태 읽기 가능
-- 관리자 UID: 슬라이드·잠금·PDF 상태 쓰기 가능
+- 청중: 슬라이드·잠금·PDF·집중 상태 읽기 가능
+- 관리자 UID: 슬라이드·잠금·PDF·집중 상태 쓰기 가능
 - 일반 로그인 사용자: 제어 불가
 - `admins` 목록: 본인 UID 항목만 읽기 가능
 
@@ -78,5 +78,16 @@ admins
 - 청중 잠금 ON에서 청중의 직접 이동 차단
 - 청중 잠금 OFF에서 청중의 직접 이동 허용
 - PDF 허용 OFF에서 PDF 저장 버튼 숨김
+- 집중 ON에서 강사·청중 화면에 핑키 안내 동시 표시
+- 집중 OFF 또는 강사 화면 Esc에서 강사·청중 안내 동시 닫힘
+- 집중 전후 현재 슬라이드 번호 유지
 - 로그아웃 또는 일반 계정에서 관리자 제어 버튼 숨김
 - Firebase 미설정 상태에서 자유 열람 유지
+
+집중 상태 저장 경로:
+
+```text
+decks/notebooklm-0930/state/focus: true | false
+```
+
+새 규칙 게시 뒤 강사 계정으로 한 번 로그인하면 기존 덱 상태에 `focus: false`가 자동 추가됨.

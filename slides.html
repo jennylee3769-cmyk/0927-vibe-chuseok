@@ -347,6 +347,21 @@ blockquote,.prompt{background:#5A4B7C!important;color:var(--clay-white)!importan
 *:focus-visible{outline:.3cqi solid #6951A8!important;outline-offset:.22cqi}
 @media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
+<style id="pinky-focus-style">
+.focus-overlay{position:fixed;inset:0;z-index:850;display:grid;place-items:center;padding:clamp(18px,4vw,56px);background:rgba(8,6,14,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.focus-overlay[hidden]{display:none!important}
+.focus-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2.2vh,24px);width:min(720px,94vw);max-height:92dvh;text-align:center;color:#fff}
+.focus-card img{display:block;width:auto;height:auto;max-width:min(420px,78vw);max-height:min(58dvh,470px);object-fit:contain;filter:drop-shadow(0 18px 24px rgba(0,0,0,.35))}
+.focus-message{margin:0;padding:.75em 1.1em;border-radius:999px;background:rgba(255,182,213,.96);color:#3d2453;font-size:clamp(1.15rem,3.1vw,2.25rem);font-weight:900;line-height:1.35;word-break:keep-all;box-shadow:inset 4px 4px 9px rgba(255,255,255,.68),0 14px 28px rgba(0,0,0,.3)}
+.focus-close{position:fixed;top:max(16px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:1;min-height:44px;padding:10px 16px;border:0;border-radius:999px;background:#FFB6D5;color:#3D3563;font:900 1rem/1 Pretendard Variable,Pretendard,sans-serif;box-shadow:inset 3px 3px 7px rgba(255,255,255,.75),0 10px 20px rgba(0,0,0,.28);cursor:pointer}
+.focus-close[hidden]{display:none!important}
+.focus-overlay.is-open .focus-card{animation:pinky-focus-in .28s cubic-bezier(.2,.8,.2,1) both}
+#focusBtn[aria-pressed="true"],#ctlFocus[aria-pressed="true"]{background:#FFB6D5!important;color:#3D3563!important}
+@keyframes pinky-focus-in{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:560px){.focus-overlay{padding:14px}.focus-card{gap:12px;max-height:94dvh}.focus-card img{max-width:82vw;max-height:55dvh}.focus-message{width:min(92vw,430px);border-radius:24px;font-size:clamp(1.05rem,5vw,1.45rem)}}
+@media(prefers-reduced-motion:reduce){.focus-overlay.is-open .focus-card{animation:pinky-focus-fade .15s ease-out both}@keyframes pinky-focus-fade{from{opacity:0}to{opacity:1}}}
+@media print{.focus-overlay{display:none!important}}
+</style>
 </head>
 <body>
 
@@ -675,6 +690,7 @@ blockquote,.prompt{background:#5A4B7C!important;color:var(--clay-white)!importan
   <span class="hint hide-sm">← → 이동 · G 전체보기 · P PDF</span>
   <button type="button" id="lockBtn" hidden>🔒 잠금</button>
   <button type="button" id="pdfBtn" hidden>PDF 허용</button>
+  <button type="button" id="focusBtn" hidden aria-pressed="false">🤫 집중</button>
   <button type="button" id="controlBtn" class="control-fab" hidden aria-controls="instructorPanel" aria-expanded="false">⚙ 강사 제어</button>
   <button type="button" id="gridBtn" aria-haspopup="dialog" aria-controls="gridOverlay">▦ 전체 보기</button>
   <button type="button" id="printBtn" class="hide-sm">⎙ PDF 저장</button>
@@ -687,11 +703,11 @@ blockquote,.prompt{background:#5A4B7C!important;color:var(--clay-white)!importan
     <div><small>청중</small><strong id="ctlViewers">-</strong></div>
     <div><small>연결</small><strong id="ctlConnection">로컬</strong></div>
   </div>
-  <div class="instructor-row"><button type="button" id="ctlPrev">◀ 이전</button><button type="button" id="ctlNext" class="primary">다음 ▶</button><input id="ctlJump" type="number" min="1" max="36" value="1" aria-label="이동할 슬라이드 번호"><button type="button" id="ctlGo">이동</button></div>
-  <div class="instructor-row"><button type="button" id="ctlLock">청중 잠금</button><button type="button" id="ctlPdf">PDF 허용</button><button type="button" id="ctlFullscreen">전체화면</button></div>
+  <div class="instructor-row"><button type="button" id="ctlPrev">◀ 이전</button><button type="button" id="ctlNext" class="primary">다음 ▶</button><input id="ctlJump" type="number" min="1" max="21" value="1" aria-label="이동할 슬라이드 번호"><button type="button" id="ctlGo">이동</button></div>
+  <div class="instructor-row"><button type="button" id="ctlLock">청중 잠금</button><button type="button" id="ctlPdf">PDF 허용</button><button type="button" id="ctlFocus" aria-pressed="false">🤫 집중</button><button type="button" id="ctlFullscreen">전체화면</button></div>
   <div class="instructor-timer"><strong id="ctlTimer">50:00</strong><div class="instructor-row"><button type="button" id="ctlTimerToggle">시작</button><button type="button" id="ctlTimerReset">초기화</button></div></div>
   <div class="instructor-row"><a href="slides.html" target="_blank" rel="noopener">청중 화면</a><a href="slides.html?screen" target="_blank" rel="noopener">프로젝션 화면</a><span class="grow"></span><button type="button" id="ctlGrid">전체 보기</button></div>
-  <p class="instructor-note">단축키: C 패널 · ← → 이동 · G 전체 보기 · P PDF · Home 표지 · End 마침</p>
+  <p class="instructor-note">단축키: C 패널 · ← → 이동 · G 전체 보기 · P PDF · Esc 집중 해제 · Home 표지 · End 마침</p>
 </aside>
 
 <div class="grid-overlay" id="gridOverlay" role="dialog" aria-modal="true" aria-label="전체 슬라이드 보기">
@@ -707,6 +723,14 @@ blockquote,.prompt{background:#5A4B7C!important;color:var(--clay-white)!importan
     <p class="err" id="lgErr" role="alert"></p>
     <div class="row"><button type="submit" class="primary">로그인</button><button type="button" id="lgClose">닫기</button></div>
   </form>
+</div>
+
+<div class="focus-overlay" id="focusOverlay" hidden aria-hidden="true" role="status" aria-live="assertive">
+  <button type="button" class="focus-close" id="focusOverlayClose" hidden>🤫 집중 해제</button>
+  <div class="focus-card">
+    <img src="assets/pinky-shh.png" alt="입 앞에 손가락을 세우고 쉿 자세를 한 핑키">
+    <p class="focus-message">쉿! 잠깐, 선생님 설명에 집중해 주세요.</p>
+  </div>
 </div>
 
 <script src="firebase/firebase-config.js?v=20260930-2"></script>
@@ -748,6 +772,7 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
   var lastFocus = null;
   var LOCKED = true;
   var PDF_OK = true;
+  var FOCUS_ON = false;
   var IS_ADMIN = false;
   var sync = null;
   var viewers = null;
@@ -773,13 +798,18 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
     mode.classList.toggle('follow', follow);
     var lockBtn = document.getElementById('lockBtn');
     var pdfBtn = document.getElementById('pdfBtn');
+    var focusBtn = document.getElementById('focusBtn');
+    var focusClose = document.getElementById('focusOverlayClose');
     var controlBtn = document.getElementById('controlBtn');
-    lockBtn.hidden = pdfBtn.hidden = !IS_ADMIN;
+    lockBtn.hidden = pdfBtn.hidden = focusBtn.hidden = !IS_ADMIN;
     controlBtn.hidden = !IS_ADMIN;
     lockBtn.textContent = LOCKED ? '🔒 잠금 중' : '🔓 자유 이동';
     lockBtn.setAttribute('aria-pressed', String(LOCKED));
     pdfBtn.textContent = PDF_OK ? 'PDF 허용 중' : 'PDF 막힘';
     pdfBtn.setAttribute('aria-pressed', String(PDF_OK));
+    focusBtn.textContent = FOCUS_ON ? '🤫 집중 해제' : '🤫 집중';
+    focusBtn.setAttribute('aria-pressed', String(FOCUS_ON));
+    focusClose.hidden = !(IS_ADMIN && FOCUS_ON);
     updateControlPanel();
   }
 
@@ -792,10 +822,14 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
     document.getElementById('ctlNext').disabled = idx === total - 1;
     var lock = document.getElementById('ctlLock');
     var pdf = document.getElementById('ctlPdf');
+    var focus = document.getElementById('ctlFocus');
     lock.textContent = LOCKED ? '🔒 청중 잠금 중' : '🔓 자유 이동';
     pdf.textContent = PDF_OK ? 'PDF 허용 중' : 'PDF 차단 중';
     lock.classList.toggle('policy-on', LOCKED);
     pdf.classList.toggle('policy-on', PDF_OK);
+    focus.textContent = FOCUS_ON ? '🤫 집중 해제' : '🤫 집중';
+    focus.setAttribute('aria-pressed', String(FOCUS_ON));
+    focus.classList.toggle('policy-on', FOCUS_ON);
   }
 
   function toggleControl(force){
@@ -813,6 +847,19 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
   function commitPdf(){
     if (sync) sync.setPdf(!PDF_OK).catch(function(){ flash('저장 실패'); });
     else { applyPdf(!PDF_OK); updateNav(); }
+  }
+  function applyFocus(on){
+    FOCUS_ON = !!on;
+    var overlay = document.getElementById('focusOverlay');
+    overlay.hidden = !FOCUS_ON;
+    overlay.setAttribute('aria-hidden', String(!FOCUS_ON));
+    overlay.classList.toggle('is-open', FOCUS_ON);
+    updateNav();
+  }
+  function commitFocus(){
+    if (!IS_ADMIN) return;
+    if (sync) sync.setFocus(!FOCUS_ON).catch(function(){ flash('집중 상태 저장 실패'); });
+    else applyFocus(!FOCUS_ON);
   }
 
   function show(i){
@@ -886,6 +933,7 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
       lastState = state;
       LOCKED = !!state.locked;
       applyPdf(state.pdf);
+      applyFocus(state.focus);
       if (!IS_ADMIN && (IS_SCREEN || LOCKED)) show(state.slide | 0);
       else updateNav();
     });
@@ -927,6 +975,8 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
 
   document.getElementById('lockBtn').addEventListener('click', commitLock);
   document.getElementById('pdfBtn').addEventListener('click', commitPdf);
+  document.getElementById('focusBtn').addEventListener('click', commitFocus);
+  document.getElementById('focusOverlayClose').addEventListener('click', commitFocus);
   document.getElementById('controlBtn').addEventListener('click', function(){ toggleControl(); });
   document.getElementById('controlClose').addEventListener('click', function(){ toggleControl(false); });
   document.getElementById('ctlPrev').addEventListener('click', function(){ navigate(idx - 1); });
@@ -935,6 +985,7 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
   document.getElementById('ctlJump').addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('ctlGo').click(); });
   document.getElementById('ctlLock').addEventListener('click', commitLock);
   document.getElementById('ctlPdf').addEventListener('click', commitPdf);
+  document.getElementById('ctlFocus').addEventListener('click', commitFocus);
   document.getElementById('ctlFullscreen').addEventListener('click', function(){ if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){}); else document.exitFullscreen(); });
   document.getElementById('ctlGrid').addEventListener('click', function(){ toggleControl(false); openGrid(); });
 
@@ -950,6 +1001,7 @@ import { isConfigured, createSync } from './firebase/firebase-sync.js';
     var t = e.target;
     /* 로그인 입력 중에는 키보드 이동 중지 · 그 외 방향키는 포커스 위치와 무관하게 최우선 */
     if (t && t.closest && t.closest('.login:not([hidden]) input')) return;
+    if (FOCUS_ON && IS_ADMIN && e.key === 'Escape') { e.preventDefault(); commitFocus(); return; }
     if (gridOverlay.classList.contains('open')) {
       if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') { closeGrid(); }
       return;
