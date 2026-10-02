@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<!--
+  웹슬라이드 스타터 · 두온교육 「강의 사이트 제작 노하우」 참가자 키트
+  먼저 바꿀 것
+  1) 아래 스크립트의 LS = 'mykit_' → 내 강의 고유 접두사 (예: 'ai0927_')
+     접두사가 겹치면 다른 강의 사이트와 저장값이 섞임
+  2) <title>, description, 표지·마침 슬라이드의 [ ] 자리
+  3) 슬라이드 추가·삭제 시 aria-label 번호와 주석 번호 함께 재정렬 (AGENTS.md 참고)
+  외부 파일 없음 · 백엔드 없음 · 이 파일 하나로 동작
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>건강 쇼츠 채널 만들기 · 수업 슬라이드</title>
+<meta name="description" content="50~60대 학습자를 위한 건강 쇼츠 채널 만들기 100분 실습 강의 슬라이드">
+<meta property="og:type" content="website">
+<meta property="og:title" content="건강 쇼츠 채널 만들기 · 수업 슬라이드">
+<meta property="og:description" content="Gemini 건강 이야기부터 Vrew 세로 영상과 채널 게시 준비까지 배우는 100분 실습">
+<meta property="og:url" content="https://jenny-codex-1002.vercel.app/health-shorts-slides.html">
+<meta property="og:image" content="https://0927-vibe-chuseok.vercel.app/assets/og-notebooklm-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="건강 쇼츠 채널 만들기 강의 대표 이미지">
+<meta name="theme-color" content="#D8CBFF">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --ink:#111111; --sub:#555555; --mute:#767676;
+  --line:#E3E3E3;
+  --slide-bg:#F4F4F3; --card:#FFFFFF;
+  --accent:#F6C744; --accent-sub:#3A3000;
+  --shadow:0 .45cqi 1.4cqi rgba(0,0,0,.09), 0 .1cqi .3cqi rgba(0,0,0,.07);
+  --shadow-lg:0 .8cqi 2.4cqi rgba(0,0,0,.13), 0 .18cqi .45cqi rgba(0,0,0,.08);
+  --alert:#D32F2F;
+  --nav-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:#0E0E0E;color:var(--ink);
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
+  word-break:keep-all;overflow-wrap:anywhere;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:inherit;text-wrap:balance;letter-spacing:-.01em}
+p,li{text-wrap:pretty}
+button{font-family:inherit}
+
+/* 16:9 무대 · 모든 크기를 무대 폭 기준 cqi로 → 창 크기와 무관하게 같은 비율 */
+#stage{position:fixed;left:50%;top:calc((100vh - var(--nav-h)) / 2);transform:translate(-50%,-50%);
+  width:min(100vw, calc((100vh - var(--nav-h)) * 16 / 9));aspect-ratio:16/9;
+  container-type:inline-size;background:var(--slide-bg);overflow:hidden}
+
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:4.6cqi 6cqi;background:var(--slide-bg);color:var(--ink)}
+.slide.active{display:flex}
+.slide-content{flex:1;display:flex;flex-direction:column;justify-content:center;gap:1.8cqi;min-height:0}
+.slide-content.compact{gap:1cqi}
+.slide-content.compact .bullets{gap:.8cqi}
+.slide-content.compact .bullets li{padding:.9cqi 1.7cqi}
+
+/* 타이포 (단위 cqi) */
+.kicker{display:flex;align-items:center;gap:1cqi;font-size:1.6cqi;font-weight:800;letter-spacing:.06em;color:var(--ink)}
+.kicker::before{content:'';flex:0 0 auto;width:2.4cqi;height:.36cqi;background:currentColor}
+h1{font-size:6cqi;font-weight:900;line-height:1.22}
+h2{font-size:3.9cqi;font-weight:800;line-height:1.28}
+.lede{font-size:2.2cqi;color:var(--sub);line-height:1.6}
+
+/* 표지·마침: 머스타드 옐로 / 휴식: 검정 반전 */
+.title-slide{background:var(--accent);color:#111111}
+.title-slide .slide-content{align-items:center;text-align:center}
+.title-slide .kicker{color:#111111}
+.title-slide h1::after{content:'';display:block;width:6cqi;height:.4cqi;background:#111111;margin:2.4cqi auto 0}
+.title-slide .lede{color:var(--accent-sub)}
+.slide.dark{background:#111111;color:#FFFFFF}
+.slide.dark .kicker{color:#FFFFFF}
+.slide.dark .lede{color:#BDBDBD}
+.meta-row{display:flex;justify-content:center;gap:1.2cqi;flex-wrap:wrap;font-size:1.7cqi}
+.meta-row span{border:.18cqi solid #111111;border-radius:99cqi;padding:.7cqi 2cqi;color:#111111;font-weight:600}
+
+/* 불릿: 한 줄씩 그림자 박스 */
+.bullets{display:flex;flex-direction:column;gap:1.2cqi}
+.bullets li{list-style:none;display:flex;gap:1.4cqi;align-items:flex-start;font-size:2.25cqi;line-height:1.55;
+  background:var(--card);box-shadow:var(--shadow);border-radius:1cqi;padding:1.25cqi 2cqi}
+.bullets li::before{content:'';flex:0 0 auto;width:.75cqi;height:.75cqi;background:var(--ink);margin-top:1.36cqi}
+.slide-content a{color:inherit;text-underline-offset:.3em;text-decoration-thickness:.15em}
+
+/* 카드 */
+.card-grid{display:grid;gap:1.8cqi}
+.c2{grid-template-columns:repeat(2,1fr)}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border-radius:1.2cqi;box-shadow:var(--shadow-lg);padding:2.2cqi;
+  display:flex;flex-direction:column;gap:.8cqi;min-width:0}
+.card .n{font-size:3.4cqi;font-weight:900;line-height:1;color:var(--ink)}
+.card .t{font-size:2.3cqi;font-weight:800}
+.card .d{font-size:1.8cqi;color:var(--sub);line-height:1.5}
+/* 색으로만 구분 금지: 아쉬운 예 = 점선 + ✕, 좋은 예 = 굵은 검정 막대 + ✓ */
+.card.bad{background:#FAFAFA;box-shadow:none;border:.2cqi dashed #9E9E9E}
+.card.bad .t{color:var(--sub)}
+.card.bad .t::before{content:'✕  '}
+.card.good{border-left:.7cqi solid var(--ink)}
+.card.good .t::before{content:'✓  '}
+
+/* 표 */
+table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:1.85cqi;line-height:1.35;
+  background:var(--card);box-shadow:var(--shadow-lg);border-radius:1.2cqi;overflow:hidden}
+table.tbl th, table.tbl td{padding:.8cqi 1.6cqi;text-align:left;border-bottom:.12cqi solid var(--line)}
+table.tbl tbody tr:last-child td{border-bottom:none}
+table.tbl th{background:#111111;color:#FFFFFF;font-weight:800}
+table.tbl tr.today td{font-weight:800}
+table.tbl tr.today td:first-child{box-shadow:inset .55cqi 0 0 #111111}
+table.tbl td:first-child, table.tbl th:first-child{white-space:nowrap}
+table.tbl td:first-child{color:var(--sub)}
+
+/* 프롬프트 카드: 검정 박스 + 오른쪽 위 복사 버튼 */
+.prompt-card{position:relative;background:#111111;color:#F2F2F2;border-radius:1.2cqi;box-shadow:var(--shadow-lg);
+  padding:2cqi 2.4cqi;display:flex;flex-direction:column;gap:1cqi}
+.prompt-card .label{font-size:1.5cqi;font-weight:800;letter-spacing:.06em;color:#BDBDBD;padding-right:14cqi}
+.prompt-card blockquote{font-size:2cqi;line-height:1.6;color:#FFFFFF;border-left:.3cqi solid #666666;padding-left:1.6cqi;
+  font-style:normal;white-space:pre-wrap}
+.copy-btn{position:absolute;top:1.5cqi;right:1.6cqi;font-size:1.5cqi;font-weight:800;
+  padding:.7cqi 1.8cqi;border-radius:99cqi;border:none;background:#FFFFFF;color:#111111;cursor:pointer;min-height:44px;min-width:44px}
+.copy-btn:hover, .copy-btn.copied{background:#E2E2E2}
+.copy-btn:focus-visible{outline:.25cqi solid #FFFFFF;outline-offset:.25cqi}
+
+/* 타이머: 클릭 시작/일시정지 · 더블클릭 또는 R 키 리셋 */
+.timer-chip{display:inline-flex;align-items:center;gap:1cqi;align-self:flex-start;cursor:pointer;user-select:none;
+  background:var(--card);box-shadow:var(--shadow);border:.18cqi solid var(--ink);border-radius:99cqi;min-height:44px;
+  padding:.9cqi 2.2cqi;font-size:2cqi;font-weight:800;color:var(--ink)}
+.timer-chip .time{font-variant-numeric:tabular-nums;min-width:3.4em;text-align:center}
+.timer-chip.running{background:#111111;color:#FFFFFF}
+.timer-chip.warn .time{color:var(--alert)}
+.timer-chip.running.warn .time{color:#FF8A80}
+.timer-chip .state{font-size:1.4cqi;font-weight:700;opacity:.8}
+.timer-chip:focus-visible, .break-big:focus-visible{outline:.3cqi solid currentColor;outline-offset:.4cqi}
+.break-big{cursor:pointer;user-select:none;text-align:center;font-variant-numeric:tabular-nums;background:none;border:none;
+  font-size:16cqi;font-weight:900;line-height:1.05;color:#FFFFFF;min-height:44px;border-radius:1cqi}
+.break-big.warn{color:#FF8A80}
+
+/* 하단 네비 */
+#nav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-h);background:#0E0E0E;border-top:1px solid #222;
+  display:flex;align-items:center;gap:8px;padding:0 14px;color:#EEEEEE;font-size:14px;z-index:200}
+#nav button, #nav a{background:#1F1F1F;color:#EEEEEE;border:1px solid #2E2E2E;border-radius:8px;
+  height:44px;min-width:44px;padding:0 14px;font-size:14px;font-weight:700;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#nav button:hover, #nav a:hover{background:#2C2C2C}
+#nav button:disabled{opacity:.35;cursor:default}
+#nav button:focus-visible, #nav a:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+#nav .grow{flex:1}
+#counter{font-variant-numeric:tabular-nums;font-weight:800;min-width:5.5em;text-align:center}
+#modeBadge{border:1px solid #444;border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700;color:#DDDDDD;display:none}
+#modeBadge.show{display:inline-block}
+#modeBadge.follow{background:#FFFFFF;color:#111111;border-color:#FFFFFF}
+.hint{color:#9A9A9A;font-size:12.5px}
+#progress{position:fixed;left:0;bottom:var(--nav-h);height:3px;background:#FFFFFF;width:0;z-index:201;transition:width .2s}
+@media (max-width:760px){ #nav .hide-sm{display:none} }
+
+/* 전체보기: 실제 축소판 */
+.grid-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,10,10,.97);display:none;overflow:auto;padding:22px 22px 40px}
+.grid-overlay.open{display:block}
+.grid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.grid-head h2{color:#FFFFFF;font-size:20px;font-weight:800}
+.grid-head button{background:#1F1F1F;color:#EEEEEE;border:1px solid #2E2E2E;border-radius:8px;height:44px;padding:0 16px;
+  font-size:14px;font-weight:700;cursor:pointer}
+.grid-head button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.grid-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.mini{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;cursor:pointer;
+  outline:3px solid transparent;outline-offset:2px;background:var(--slide-bg)}
+.mini:hover, .mini:focus-visible, .mini.current{outline-color:#FFFFFF}
+/* 960px 기준으로 그린 뒤 축소 · 240px에 직접 그리면 브라우저 최소 글꼴 크기에 걸려 넘침 */
+.mini-inner{position:absolute;left:0;top:0;width:960px;height:540px;container-type:inline-size;
+  transform-origin:0 0;pointer-events:none;background:var(--slide-bg)}
+.mini-inner .slide{display:flex}
+.mini-num{position:absolute;right:6px;top:6px;background:rgba(0,0,0,.78);color:#FFFFFF;font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:99px;z-index:2}
+
+@media (prefers-reduced-motion:reduce){ #progress{transition:none} }
+
+/* PDF: 16:9 페이지 1장 = 슬라이드 1장 */
+@page{size:13.333in 7.5in;margin:0}
+@media print{
+  html, body{overflow:visible!important;height:auto!important;background:#FFFFFF}
+  #nav, #progress, .grid-overlay{display:none!important}
+  #stage{position:static!important;display:block!important;transform:none!important;width:13.333in!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;overflow:visible!important;border:0!important;box-shadow:none!important;box-sizing:border-box!important}
+  #stage > .slide{position:relative!important;display:flex!important;width:13.333in;height:7.5in;box-sizing:border-box!important;overflow:hidden!important;
+    break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #stage > .slide:last-child{break-after:auto;page-break-after:auto}
+  .source-guide-figure{flex:none!important;height:5.05in!important}
+  html.no-pdf #stage{display:none!important}
+  html.no-pdf body::before{content:"PDF 저장 비활성화 · 강사에게 문의";
+    display:block;padding:2rem;font-size:14pt;color:#000}
+}
+
+.fb-banner{position:fixed;left:0;right:0;top:0;z-index:300;background:#F6C744;color:#111;
+  font:700 14px/1.4 'Pretendard Variable',Pretendard,sans-serif;text-align:center;padding:8px 12px}
+.conn{border:1px solid #444;border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700;color:#DDD}
+#nav button[aria-pressed="true"]{background:#FFFFFF;color:#111111}
+#nav [hidden]{display:none!important}
+.login{position:fixed;inset:0;z-index:600;background:rgba(10,10,10,.8);display:flex;align-items:center;justify-content:center;padding:16px}
+.login[hidden]{display:none}
+.login-box{background:#FFF;color:#111;border-radius:14px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px;
+  font-family:'Pretendard Variable',Pretendard,sans-serif}
+.login-box h2{font-size:20px}
+.login-box label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:700}
+.login-box input{font:inherit;font-weight:500;border:1px solid #BBB;border-radius:8px;padding:10px 12px;min-height:44px}
+.login-box .row{display:flex;gap:8px}
+.login-box button{font:inherit;font-weight:800;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #BBB;background:#FFF;cursor:pointer}
+.login-box button.primary{background:#111;color:#FFF;border-color:#111}
+.login-box .err{color:#B71C1C;font-size:13px;font-weight:700;min-height:1.2em}
+</style>
+<style id="genz-maximalism">
+/* Gen Z 카오스 슬라이드: 무대 비율과 기능 유지 */
+:root{--hard:0.7cqi 0.7cqi 0 #111}
+body{background-color:#fff;background-image:linear-gradient(rgba(17,17,17,.11) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.11) 1px,transparent 1px);background-size:2.2cqi 2.2cqi;overflow:hidden}
+#stage{border:.45cqi solid #111;box-shadow:1.15cqi 1.15cqi 0 #111}
+.slide{background:#fff!important}
+.slide::after{content:attr(aria-label);position:absolute;right:2.6cqi;top:2.2cqi;max-width:35%;padding:.55cqi .9cqi;background:#F6C744;border:.28cqi solid #111;box-shadow:.38cqi .38cqi 0 #111;font-size:1.15cqi;font-weight:950;line-height:1.1;transform:rotate(2deg);z-index:5}
+.slide.active .slide-content{animation:chaos-in .48s cubic-bezier(.2,.8,.2,1) both}
+.slide h1,.slide h2{letter-spacing:-.065em!important;text-transform:uppercase;text-shadow:.22cqi .22cqi 0 rgba(246,199,68,.9)}
+.slide h2{font-size:4.35cqi!important;line-height:.88!important}
+.card,.feature,.flow-item,.step,.metric,.panel{border:.28cqi solid #111!important;border-radius:0!important;box-shadow:var(--hard)!important}
+.cards>*:nth-child(odd),.grid>*:nth-child(odd){transform:rotate(-.7deg)}
+.cards>*:nth-child(even),.grid>*:nth-child(even){transform:rotate(.7deg)}
+table{border:.3cqi solid #111!important;box-shadow:var(--hard)!important}th{background:#111!important;color:#fff!important}td{border-color:#111!important}
+blockquote,.prompt{border:.3cqi solid #F6C744!important;border-radius:0!important;box-shadow:.65cqi .65cqi 0 #F6C744!important}
+.title-slide{background:#F6C744!important}.title-slide::before{content:'NOTEBOOK / SOURCE / ASK';position:absolute;left:-2cqi;bottom:1.5cqi;font-size:8.8cqi;font-weight:950;letter-spacing:-.08em;color:transparent;-webkit-text-stroke:.16cqi rgba(17,17,17,.2);transform:rotate(-5deg)}
+.dark{background:#111!important;color:#fff!important}.dark::after{color:#111}
+#nav{border:.28cqi solid #111!important;border-radius:0!important;box-shadow:.55cqi .55cqi 0 #111!important}
+#nav button,#nav a{border-radius:0!important;font-weight:900!important}
+.mini{border:.3cqi solid #111!important;border-radius:0!important;box-shadow:.5cqi .5cqi 0 #111!important}.mini:nth-child(odd){transform:rotate(-1deg)}.mini:nth-child(even){transform:rotate(1deg)}
+@keyframes chaos-in{from{opacity:0;transform:translateY(2.6cqi) rotate(1.1deg) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:700px){#stage{box-shadow:.8cqi .8cqi 0 #111}.slide::after{font-size:1.4cqi}}
+@media(prefers-reduced-motion:reduce){.slide.active .slide-content{animation:none!important}}
+.instructor-panel{position:fixed;z-index:550;right:18px;bottom:76px;width:min(390px,calc(100vw - 24px));max-height:calc(100vh - 100px);overflow:auto;background:#fff;color:#111;border:4px solid #111;box-shadow:10px 10px 0 #F6C744;padding:16px;display:grid;gap:12px}
+.instructor-panel[hidden]{display:none}.instructor-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.instructor-head h2{font-size:22px;letter-spacing:-.04em}.instructor-head button{min-width:44px}
+.instructor-status{display:grid;grid-template-columns:repeat(3,1fr);border:3px solid #111}.instructor-status div{padding:8px;border-right:2px solid #111}.instructor-status div:last-child{border-right:0}.instructor-status small{display:block;font-size:10px;font-weight:800;color:#666}.instructor-status strong{font-size:15px}
+.instructor-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.instructor-row button,.instructor-row a,.instructor-row input{min-height:44px;border:3px solid #111;border-radius:0;background:#fff;color:#111;font:800 14px/1 'Pretendard Variable',Pretendard,sans-serif;padding:0 12px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.instructor-row button.primary{background:#111;color:#fff}.instructor-row button.policy-on{background:#F6C744}.instructor-row input{width:76px}.instructor-row .grow{flex:1}
+.instructor-timer{background:#111;color:#fff;border:3px solid #111;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.instructor-timer strong{font-size:32px;letter-spacing:-.04em}.instructor-note{font-size:11px;font-weight:700;color:#555;background:#eee;padding:8px}.control-fab{background:#F6C744!important;color:#111!important}
+@media(max-width:700px){.instructor-panel{right:8px;bottom:68px;width:calc(100vw - 16px);max-height:68vh}.instructor-status{grid-template-columns:1fr 1fr}.instructor-status div:nth-child(2){border-right:0}.instructor-status div:last-child{grid-column:1/-1;border-top:2px solid #111}}
+</style>
+<style id="vivid-block-theme">
+/* 비비드 블록: 슬라이드별 원색 면과 오프셋 카드 */
+:root{--v-blue:#2457FF;--v-pink:#FF3D9A;--v-yellow:#FFD400;--v-lime:#B7FF00;--v-orange:#FF5A1F;--v-black:#111;--v-white:#FFF;--hard:.72cqi .72cqi 0 var(--v-black)}
+body{background:var(--v-yellow);background-image:none}
+#stage{border-color:var(--v-black);box-shadow:1.15cqi 1.15cqi 0 var(--v-pink)}
+#stage>.slide{background:var(--v-yellow)!important;color:var(--v-black)}
+#stage>.slide:nth-of-type(4n+2){background:var(--v-blue)!important;color:var(--v-white)}
+#stage>.slide:nth-of-type(4n+3){background:var(--v-pink)!important;color:var(--v-black)}
+#stage>.slide:nth-of-type(4n){background:var(--v-lime)!important;color:var(--v-black)}
+#stage>.slide:nth-of-type(4n+2) h2{color:var(--v-white)}
+#stage>.title-slide{background:var(--v-blue)!important;color:var(--v-white)}
+#stage>.title-slide:last-of-type{background:var(--v-pink)!important;color:var(--v-black)}
+.title-slide h1{color:var(--v-white)!important;text-shadow:.35cqi .35cqi 0 var(--v-black)!important}
+.title-slide:last-of-type h1{color:var(--v-black)!important;text-shadow:.3cqi .3cqi 0 var(--v-yellow)!important}
+.slide h2{text-shadow:.24cqi .24cqi 0 var(--v-yellow)}
+.slide::after{background:var(--v-yellow);box-shadow:.42cqi .42cqi 0 var(--v-black)}
+.kicker{display:inline-flex;align-self:flex-start;background:var(--v-black);color:var(--v-white)!important;padding:.42cqi .72cqi;border:.22cqi solid var(--v-black);box-shadow:.35cqi .35cqi 0 var(--v-yellow)}
+.title-slide .lede{color:var(--v-white)!important}.title-slide .meta-row span{background:var(--v-yellow);color:var(--v-black);border-color:var(--v-black)}
+.title-slide:last-of-type .lede{color:var(--v-black)!important}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:var(--v-white)!important;color:var(--v-black)!important;border-color:var(--v-black)!important;box-shadow:.72cqi .72cqi 0 var(--v-black)!important}
+.card.good{background:var(--v-yellow)!important}.card:nth-child(3n+2){box-shadow:.72cqi .72cqi 0 var(--v-blue)!important}.card:nth-child(3n){box-shadow:.72cqi .72cqi 0 var(--v-pink)!important}
+blockquote,.prompt{background:var(--v-black)!important;color:var(--v-white)!important;border-color:var(--v-yellow)!important;box-shadow:.65cqi .65cqi 0 var(--v-yellow)!important}
+.copy{background:var(--v-lime)!important;color:var(--v-black)!important}
+.dark{background:var(--v-black)!important;color:var(--v-white)!important}.dark .timer{color:var(--v-lime)}
+#nav{background:var(--v-black);box-shadow:.55cqi .55cqi 0 var(--v-pink)!important}.control-fab{background:var(--v-yellow)!important}
+.fb-banner{background:var(--v-pink);color:var(--v-black)}
+.instructor-panel{box-shadow:10px 10px 0 var(--v-pink)}.instructor-row button.policy-on{background:var(--v-lime)}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important}}
+</style>
+<style id="cyberpunk-theme">
+/* 사이버펑크 UI: 네온 시안·마젠타, 어두운 슬라이드, 짧은 글리치 */
+:root{--cy-void:#070812;--cy-ink:#F5F7FF;--cy-muted:#B6BFDC;--cy-panel:#0D1021;--cy-panel-2:#151833;--cy-cyan:#00F5FF;--cy-magenta:#FF2BD6;--cy-acid:#B8FF00;--cy-line:#30385F}
+body{background:var(--cy-void);background-image:linear-gradient(rgba(0,245,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,43,214,.045) 1px,transparent 1px);background-size:32px 32px;color:var(--cy-ink)}
+#stage{border-color:var(--cy-cyan);box-shadow:0 0 2.2cqi rgba(0,245,255,.28)}
+#stage>.slide,#stage>.slide:nth-of-type(n){background:radial-gradient(circle at 90% 10%,rgba(255,43,214,.14),transparent 30%),radial-gradient(circle at 10% 90%,rgba(0,245,255,.12),transparent 32%),var(--cy-void)!important;color:var(--cy-ink)}
+#stage>.slide:nth-of-type(even){background:radial-gradient(circle at 82% 18%,rgba(0,245,255,.16),transparent 30%),radial-gradient(circle at 14% 84%,rgba(255,43,214,.12),transparent 32%),#090B19!important}
+#stage>.title-slide{background:radial-gradient(circle at 20% 20%,rgba(255,43,214,.34),transparent 36%),radial-gradient(circle at 82% 76%,rgba(0,245,255,.25),transparent 36%),var(--cy-void)!important;color:var(--cy-ink)}
+#stage>.title-slide:last-of-type{background:radial-gradient(circle at 25% 70%,rgba(0,245,255,.25),transparent 36%),radial-gradient(circle at 80% 22%,rgba(255,43,214,.32),transparent 36%),var(--cy-void)!important;color:var(--cy-ink)}
+.slide h2,#stage>.slide:nth-of-type(n) h2{color:var(--cy-ink);text-shadow:-.16cqi 0 0 rgba(255,43,214,.78),.16cqi 0 0 rgba(0,245,255,.78)}
+.title-slide h1,.title-slide:last-of-type h1{color:var(--cy-ink)!important;text-shadow:-.28cqi 0 0 rgba(255,43,214,.92),.28cqi 0 0 rgba(0,245,255,.9),0 0 1.5cqi rgba(0,245,255,.28)!important}
+.slide::after{background:var(--cy-panel-2);color:var(--cy-cyan);border:.08cqi solid var(--cy-cyan);box-shadow:0 0 .8cqi rgba(0,245,255,.35)}
+.kicker{display:inline-flex;align-self:flex-start;background:rgba(13,16,33,.94);color:var(--cy-cyan)!important;padding:.42cqi .72cqi;border:.08cqi solid var(--cy-cyan);box-shadow:0 0 .9cqi rgba(0,245,255,.3)}
+.title-slide .lede,.title-slide:last-of-type .lede{color:var(--cy-muted)!important}.title-slide .meta-row span{background:var(--cy-panel-2);color:var(--cy-ink);border-color:var(--cy-line);box-shadow:.22cqi .22cqi 0 rgba(255,43,214,.4)}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:rgba(13,16,33,.95)!important;color:var(--cy-ink)!important;border-color:var(--cy-line)!important;box-shadow:0 0 0 .08cqi rgba(0,245,255,.12),.52cqi .52cqi 0 rgba(0,245,255,.14)!important}
+.card.good{background:rgba(16,32,28,.96)!important;border-color:var(--cy-acid)!important}.card:nth-child(3n+2){box-shadow:0 0 0 .08cqi rgba(255,43,214,.18),.52cqi .52cqi 0 rgba(255,43,214,.18)!important}.card:nth-child(3n){box-shadow:0 0 0 .08cqi rgba(184,255,0,.14),.52cqi .52cqi 0 rgba(184,255,0,.14)!important}
+.card p,.feature p,.flow-item p,.step p,.metric p,.panel p,.mini p{color:var(--cy-muted)}
+blockquote,.prompt{background:#03040A!important;color:var(--cy-ink)!important;border-color:var(--cy-magenta)!important;box-shadow:0 0 1.05cqi rgba(255,43,214,.32)!important}
+.copy{background:var(--cy-cyan)!important;color:var(--cy-void)!important;box-shadow:0 0 .7cqi rgba(0,245,255,.42)}
+.dark{background:#03040A!important;color:var(--cy-ink)!important}.dark .timer{color:var(--cy-acid);text-shadow:0 0 .8cqi rgba(184,255,0,.5)}
+#nav{background:rgba(3,4,10,.96);border-color:var(--cy-line);box-shadow:0 0 1.1cqi rgba(255,43,214,.28)!important}#nav button{color:var(--cy-cyan)}.control-fab{background:var(--cy-magenta)!important;color:var(--cy-void)!important;box-shadow:0 0 .8cqi rgba(255,43,214,.5)}
+.fb-banner{background:var(--cy-panel-2);color:var(--cy-cyan);border-color:var(--cy-cyan)}
+.instructor-panel{background:var(--cy-panel)!important;color:var(--cy-ink);border-color:var(--cy-magenta);box-shadow:0 0 24px rgba(255,43,214,.26)}.instructor-row button.policy-on{background:var(--cy-acid);color:var(--cy-void)}
+.login-modal>div,.modal-card{background:var(--cy-panel)!important;color:var(--cy-ink)!important;border:1px solid var(--cy-cyan)!important;box-shadow:0 0 28px rgba(0,245,255,.3)!important}input{background:#090B19!important;color:var(--cy-ink)!important;border-color:var(--cy-line)!important}
+@keyframes cyber-glitch{0%,100%{transform:translate(0)}18%{transform:translate(-.16cqi,.08cqi)}36%{transform:translate(.16cqi,-.08cqi)}54%{transform:translate(-.08cqi,-.08cqi)}72%{transform:translate(.08cqi,.08cqi)}}
+@media (prefers-reduced-motion:no-preference){.title-slide h1{animation:cyber-glitch .72s steps(2,end) 1 both}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.title-slide h1{animation:none!important;transform:none!important}}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<style id="brutalism-theme">
+/* 브루탈리즘: 거친 원색 면, 굵은 검정선, 무가공 오프셋 그림자 */
+:root{--br-paper:#F3F0E8;--br-ink:#0A0A0A;--br-red:#FF3B30;--br-blue:#265DFF;--br-yellow:#FFD600;--br-green:#00C853;--br-white:#FFFFFF}
+body{background:var(--br-paper);background-image:none;color:var(--br-ink)}
+#stage{border:6px solid var(--br-ink);box-shadow:1cqi 1cqi 0 var(--br-ink)}
+#stage>.slide,#stage>.slide:nth-of-type(n){background:var(--br-paper)!important;color:var(--br-ink)}
+#stage>.slide:nth-of-type(4n+2){background:var(--br-blue)!important;color:var(--br-white)}
+#stage>.slide:nth-of-type(4n+3){background:var(--br-red)!important;color:var(--br-ink)}
+#stage>.slide:nth-of-type(4n){background:var(--br-yellow)!important;color:var(--br-ink)}
+#stage>.title-slide{background:var(--br-yellow)!important;color:var(--br-ink)}#stage>.title-slide:last-of-type{background:var(--br-red)!important;color:var(--br-ink)}
+.slide h2,#stage>.slide:nth-of-type(n) h2{color:inherit;text-shadow:none}.title-slide h1,.title-slide:last-of-type h1{color:var(--br-ink)!important;text-shadow:.42cqi .42cqi 0 var(--br-white)!important;animation:none!important;transform:none!important}
+.slide::after{background:var(--br-white);color:var(--br-ink);border:.24cqi solid var(--br-ink);box-shadow:.34cqi .34cqi 0 var(--br-ink)}
+.kicker{background:var(--br-ink);color:var(--br-white)!important;border:.24cqi solid var(--br-ink);box-shadow:.34cqi .34cqi 0 var(--br-white)}
+.title-slide .lede,.title-slide:last-of-type .lede{color:var(--br-ink)!important}.title-slide .meta-row span{background:var(--br-white);color:var(--br-ink);border:.2cqi solid var(--br-ink);border-radius:0;box-shadow:.3cqi .3cqi 0 var(--br-ink)}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:var(--br-white)!important;color:var(--br-ink)!important;border:.28cqi solid var(--br-ink)!important;border-radius:0!important;box-shadow:.56cqi .56cqi 0 var(--br-ink)!important}
+.card.good{background:var(--br-green)!important;border-color:var(--br-ink)!important}.card:nth-child(3n+2){box-shadow:.56cqi .56cqi 0 var(--br-yellow)!important}.card:nth-child(3n){box-shadow:.56cqi .56cqi 0 var(--br-blue)!important}
+.card p,.feature p,.flow-item p,.step p,.metric p,.panel p,.mini p{color:var(--br-ink)}
+blockquote,.prompt{background:var(--br-ink)!important;color:var(--br-white)!important;border:.28cqi solid var(--br-ink)!important;box-shadow:.6cqi .6cqi 0 var(--br-yellow)!important;border-radius:0!important}
+.copy{background:var(--br-yellow)!important;color:var(--br-ink)!important;border:.2cqi solid var(--br-white);box-shadow:.3cqi .3cqi 0 var(--br-red)}
+.dark{background:var(--br-ink)!important;color:var(--br-white)!important}.dark .timer{color:var(--br-yellow);text-shadow:none}
+#nav{background:var(--br-ink);border-color:var(--br-ink);box-shadow:0 -.4cqi 0 var(--br-red)!important}#nav button,#nav a{color:var(--br-white);border-radius:0!important}.control-fab{background:var(--br-yellow)!important;color:var(--br-ink)!important;box-shadow:.35cqi .35cqi 0 var(--br-red)}
+.fb-banner{background:var(--br-red);color:var(--br-white);border:3px solid var(--br-ink)}
+.instructor-panel{background:var(--br-white)!important;color:var(--br-ink);border:5px solid var(--br-ink);box-shadow:10px 10px 0 var(--br-blue)}.instructor-row button.policy-on{background:var(--br-green);color:var(--br-ink)}
+.login-modal>div,.modal-card{background:var(--br-white)!important;color:var(--br-ink)!important;border:5px solid var(--br-ink)!important;box-shadow:12px 12px 0 var(--br-blue)!important}input{background:var(--br-white)!important;color:var(--br-ink)!important;border:3px solid var(--br-ink)!important;border-radius:0!important}
+*:focus-visible{outline:.3cqi solid var(--br-red)!important;outline-offset:.2cqi}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<style id="claymorphism-theme">
+/* 클레이모피즘: 파스텔 찰흙 면, 둥근 팽창형 카드, 부드러운 입체감 */
+:root{--clay-bg:#FFF4E8;--clay-ink:#3D3563;--clay-purple:#D8CBFF;--clay-blue:#A7D8FF;--clay-pink:#FFB6D5;--clay-mint:#BFEBD7;--clay-yellow:#FFE58A;--clay-white:#FFFDFC;--clay-shadow:#B9A9CF}
+body{background:var(--clay-bg);background-image:radial-gradient(circle at 10% 18%,rgba(255,182,213,.5) 0 4rem,transparent 4.1rem),radial-gradient(circle at 90% 78%,rgba(167,216,255,.52) 0 6rem,transparent 6.1rem);color:var(--clay-ink)}
+#stage{border:.35cqi solid rgba(255,255,255,.75);border-radius:2.1cqi;box-shadow:inset .5cqi .5cqi 1cqi rgba(255,255,255,.72),inset -.55cqi -.65cqi 1.1cqi rgba(92,74,125,.11),0 1.1cqi 2.2cqi rgba(88,66,116,.2);overflow:hidden}
+#stage>.slide,#stage>.slide:nth-of-type(n){background:var(--clay-bg)!important;color:var(--clay-ink)}
+#stage>.slide:nth-of-type(4n+2){background:#DDEEFF!important;color:var(--clay-ink)}#stage>.slide:nth-of-type(4n+3){background:#FFE1ED!important;color:var(--clay-ink)}#stage>.slide:nth-of-type(4n){background:#DDF3E8!important;color:var(--clay-ink)}
+#stage>.slide.title-slide{background:linear-gradient(145deg,var(--clay-purple),var(--clay-blue))!important;color:var(--clay-ink)}#stage>.slide.title-slide:last-of-type{background:linear-gradient(145deg,var(--clay-pink),var(--clay-yellow))!important;color:var(--clay-ink)}
+.slide h2,#stage>.slide:nth-of-type(n) h2{color:var(--clay-ink);text-shadow:0 .24cqi 0 rgba(255,255,255,.78)}.title-slide h1,.title-slide:last-of-type h1{color:var(--clay-ink)!important;text-shadow:0 .34cqi 0 rgba(255,255,255,.82),0 .75cqi 1.2cqi rgba(80,60,108,.16)!important;animation:none!important;transform:none!important}
+.slide::after{background:var(--clay-yellow);color:var(--clay-ink);border:0;border-radius:999px;box-shadow:inset .24cqi .24cqi .48cqi rgba(255,255,255,.8),inset -.28cqi -.34cqi .52cqi rgba(124,94,55,.13),0 .42cqi .72cqi rgba(82,61,107,.17)}
+.kicker{background:var(--clay-pink);color:var(--clay-ink)!important;border:0;border-radius:999px;box-shadow:inset .3cqi .3cqi .6cqi rgba(255,255,255,.82),inset -.32cqi -.4cqi .62cqi rgba(130,73,107,.13),0 .45cqi .78cqi rgba(83,62,109,.17)}
+.title-slide .lede,.title-slide:last-of-type .lede{color:var(--clay-ink)!important}.title-slide .meta-row span{background:rgba(255,253,252,.82);color:var(--clay-ink);border:0;border-radius:999px;box-shadow:inset .25cqi .25cqi .5cqi #fff,inset -.3cqi -.36cqi .55cqi rgba(92,75,127,.11),0 .4cqi .7cqi rgba(83,62,109,.14)}
+.card,.feature,.flow-item,.step,.metric,.panel,.mini{background:var(--clay-white)!important;color:var(--clay-ink)!important;border:0!important;border-radius:1.5cqi!important;box-shadow:inset .36cqi .36cqi .72cqi rgba(255,255,255,.92),inset -.42cqi -.5cqi .8cqi rgba(98,78,132,.11),0 .7cqi 1.2cqi rgba(88,66,116,.15)!important}
+.card.good{background:var(--clay-mint)!important}.card:nth-child(3n+2){background:#FFE1ED!important}.card:nth-child(3n){background:#E5DDFF!important}
+.card p,.feature p,.flow-item p,.step p,.metric p,.panel p,.mini p{color:var(--clay-ink)}
+blockquote,.prompt{background:#5A4B7C!important;color:var(--clay-white)!important;border:0!important;border-radius:1.4cqi!important;box-shadow:inset .3cqi .3cqi .65cqi rgba(255,255,255,.2),inset -.36cqi -.42cqi .72cqi rgba(35,22,60,.2),0 .7cqi 1.2cqi rgba(74,52,102,.2)!important}
+.copy{background:var(--clay-yellow)!important;color:var(--clay-ink)!important;border:0;border-radius:999px;box-shadow:inset .22cqi .22cqi .45cqi rgba(255,255,255,.8),0 .35cqi .6cqi rgba(70,52,94,.17)}
+.dark{background:#51456B!important;color:var(--clay-white)!important}.dark .timer{color:var(--clay-yellow);text-shadow:0 .28cqi 0 rgba(0,0,0,.14)}
+#nav{background:rgba(81,69,107,.96);border:0;border-radius:1.3cqi 1.3cqi 0 0;box-shadow:0 -.5cqi 1cqi rgba(74,55,97,.18)!important}#nav button,#nav a{color:var(--clay-white);border:0;border-radius:999px!important}.control-fab{background:var(--clay-pink)!important;color:var(--clay-ink)!important;box-shadow:inset .2cqi .2cqi .4cqi rgba(255,255,255,.8),0 .34cqi .6cqi rgba(70,52,94,.18)}
+.fb-banner{background:var(--clay-pink);color:var(--clay-ink);border:0;border-radius:999px}.instructor-panel{background:var(--clay-white)!important;color:var(--clay-ink);border:0;border-radius:28px;box-shadow:inset 5px 5px 10px #fff,inset -6px -7px 12px rgba(98,78,132,.12),0 14px 24px rgba(88,66,116,.18)}.instructor-row button.policy-on{background:var(--clay-mint);color:var(--clay-ink)}
+.login-modal>div,.modal-card{background:var(--clay-white)!important;color:var(--clay-ink)!important;border:0!important;border-radius:30px!important;box-shadow:inset 5px 5px 11px #fff,inset -6px -7px 12px rgba(98,78,132,.11),0 16px 28px rgba(88,66,116,.2)!important}input{background:#F6F1FF!important;color:var(--clay-ink)!important;border:0!important;border-radius:18px!important;box-shadow:inset 3px 3px 7px rgba(107,85,138,.13)}
+*:focus-visible{outline:.3cqi solid #6951A8!important;outline-offset:.22cqi}
+@media print{#stage{box-shadow:none!important}#stage>.slide{border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<style id="pinky-focus-style">
+.focus-overlay{position:fixed;inset:0;z-index:850;display:grid;place-items:center;padding:clamp(18px,4vw,56px);background:rgba(8,6,14,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.focus-overlay[hidden]{display:none!important}
+.focus-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2.2vh,24px);width:min(720px,94vw);max-height:92dvh;text-align:center;color:#fff}
+.focus-card img{display:block;width:auto;height:auto;max-width:min(420px,78vw);max-height:min(58dvh,470px);object-fit:contain;filter:drop-shadow(0 18px 24px rgba(0,0,0,.35))}
+.focus-message{margin:0;padding:.75em 1.1em;border-radius:999px;background:rgba(255,182,213,.96);color:#3d2453;font-size:clamp(1.15rem,3.1vw,2.25rem);font-weight:900;line-height:1.35;word-break:keep-all;box-shadow:inset 4px 4px 9px rgba(255,255,255,.68),0 14px 28px rgba(0,0,0,.3)}
+.focus-close{position:fixed;top:max(16px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:1;min-height:44px;padding:10px 16px;border:0;border-radius:999px;background:#FFB6D5;color:#3D3563;font:900 1rem/1 Pretendard Variable,Pretendard,sans-serif;box-shadow:inset 3px 3px 7px rgba(255,255,255,.75),0 10px 20px rgba(0,0,0,.28);cursor:pointer}
+.focus-close[hidden]{display:none!important}
+.focus-overlay.is-open .focus-card{animation:pinky-focus-in .28s cubic-bezier(.2,.8,.2,1) both}
+#focusBtn[aria-pressed="true"],#ctlFocus[aria-pressed="true"]{background:#FFB6D5!important;color:#3D3563!important}
+@keyframes pinky-focus-in{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:560px){.focus-overlay{padding:14px}.focus-card{gap:12px;max-height:94dvh}.focus-card img{max-width:82vw;max-height:55dvh}.focus-message{width:min(92vw,430px);border-radius:24px;font-size:clamp(1.05rem,5vw,1.45rem)}}
+@media(prefers-reduced-motion:reduce){.focus-overlay.is-open .focus-card{animation:pinky-focus-fade .15s ease-out both}@keyframes pinky-focus-fade{from{opacity:0}to{opacity:1}}}
+@media print{.focus-overlay{display:none!important}}
+</style>
+<style id="health-shorts-theme">
+:root{--accent:#BDEDCB;--accent-sub:#21452F}
+.title-slide::before{content:'HEALTH / STORY / SHORTS'!important}
+#stage>.title-slide{background:#BDEDCB!important}
+#stage>.title-slide:last-of-type{background:#FFD6E3!important}
+.health-link{display:flex;align-items:center;justify-content:center;min-height:44px;padding:.9cqi 1.5cqi;background:#111;color:#fff!important;text-decoration:none;border-radius:999px;font-size:1.55cqi;font-weight:900;box-shadow:0 .5cqi 1cqi rgba(0,0,0,.18)}
+.health-link:focus-visible{outline:.3cqi solid #111;outline-offset:.3cqi}
+@media print{#stage>.title-slide::before{display:none!important}}
+</style>
+</head>
+<body>
+
+<div id="fbBanner" class="fb-banner" hidden>Firebase 설정 전 · 자유 열람 모드</div>
+
+<main id="stage">
+<!-- ===== 1. 건강 쇼츠 채널 만들기 ===== -->
+<section class="slide active title-slide" aria-label="1. 건강 쇼츠 채널 만들기"><div class="slide-content"><div class="kicker">50~60대 학습자 · 100분 실습</div><h1>건강 쇼츠 채널 만들기</h1><p class="lede">Gemini 건강 이야기 → Vrew 세로 영상 → 채널 게시 준비</p><div class="meta-row"><span>건강 이야기</span><span>세로 영상</span><span>게시 준비</span></div></div></section>
+<!-- ===== 2. 오늘의 완성물 ===== -->
+<section class="slide" aria-label="2. 오늘의 완성물"><div class="slide-content"><div class="kicker">완료 모습 · 2분</div><h2>오늘의 완성물</h2><div class="card-grid c3"><div class="card"><div class="n">1</div><div class="t">건강 주제</div><div class="d">생활 속 습관 하나</div></div><div class="card"><div class="n">2</div><div class="t">45초 대본</div><div class="d">도입·핵심·행동 제안</div></div><div class="card good"><div class="n">3</div><div class="t">세로 영상</div><div class="d">자막·화면·AI 목소리</div></div></div></div></section>
+<!-- ===== 3. 학습 목표 ===== -->
+<section class="slide" aria-label="3. 학습 목표"><div class="slide-content compact"><div class="kicker">완료 기준 · 2분</div><h2>학습 목표</h2><ul class="bullets"><li>이야기 생성: Gemini Gem에서 건강 대본 1개 완성</li><li>영상 제작: Vrew에서 30~60초 세로 영상 완성</li><li>정보 점검: 과장 표현·출처·자막 가독성 확인</li><li>게시 준비: 제목·설명·공개 범위 확인</li></ul></div></section>
+<!-- ===== 4. 강의 순서 ===== -->
+<section class="slide" aria-label="4. 강의 순서"><div class="slide-content"><div class="kicker">오늘의 흐름 · 2분</div><h2>강의 순서</h2><div class="card-grid c3"><div class="card"><div class="n">1</div><div class="t">이야기</div><div class="d">주제·시청자·대본</div></div><div class="card"><div class="n">2</div><div class="t">영상</div><div class="d">장면·자막·목소리</div></div><div class="card"><div class="n">3</div><div class="t">게시</div><div class="d">검토·제목·공개 준비</div></div></div></div></section>
+<!-- ===== 5. 참고 채널 ===== -->
+<section class="slide" aria-label="5. 참고 채널"><div class="slide-content"><div class="kicker">사례 관찰 · 3분</div><h2>참고 채널</h2><div class="card-grid c2"><div class="card"><div class="t">관찰 항목</div><div class="d">주제·첫 문장·자막 크기·영상 길이</div></div><div class="card good"><div class="t">시니어 건강습관비법</div><div class="d">사용자 제공 참고 채널</div><a class="health-link" href="https://www.youtube.com/channel/UChI8eImLRDDMI6zTOwKCHAw" target="_blank" rel="noopener">참고 채널 바로가기</a></div></div></div></section>
+<!-- ===== 6. 건강 쇼츠의 특징 ===== -->
+<section class="slide" aria-label="6. 건강 쇼츠의 특징"><div class="slide-content"><div class="kicker">보기 쉬운 구성 · 3분</div><h2>건강 쇼츠의 특징</h2><div class="card-grid c2"><div class="card good"><div class="t">좋은 구성</div><div class="d">한 영상 한 습관 · 큰 자막 · 짧은 문장 · 행동 하나</div></div><div class="card bad"><div class="t">피할 구성</div><div class="d">여러 주제 혼합 · 작은 글자 · 긴 설명 · 효과 단정</div></div></div></div></section>
+<!-- ===== 7. 건강 정보 안전수칙 ===== -->
+<section class="slide" aria-label="7. 건강 정보 안전수칙"><div class="slide-content compact"><div class="kicker">신뢰 우선 · 3분</div><h2>건강 정보 안전수칙</h2><ul class="bullets"><li>효과 표현: 치료·완치·보장 단정 금지</li><li>정보 확인: 공공기관·의료기관 자료와 대조</li><li>개인 차이: 건강 상태에 따른 차이 표시</li><li>상담 안내: 증상·약물 관련 내용은 전문가 확인</li></ul></div></section>
+<!-- ===== 8. 제작 흐름 ===== -->
+<section class="slide" aria-label="8. 제작 흐름"><div class="slide-content"><div class="kicker">전체 과정 · 2분</div><h2>제작 흐름</h2><div class="card-grid c3"><div class="card"><div class="t">Gemini</div><div class="d">주제 → 건강 이야기</div></div><div class="card"><div class="t">Vrew</div><div class="d">대본 → 세로 영상</div></div><div class="card"><div class="t">YouTube</div><div class="d">검토 → 게시 준비</div></div></div></div></section>
+<!-- ===== 9. Gemini Gem 접속 ===== -->
+<section class="slide" aria-label="9. Gemini Gem 접속"><div class="slide-content"><div class="kicker">실습 도구 · 2분</div><h2>Gemini Gem 접속</h2><div class="card good"><div class="t">건강 스토리 Gem</div><div class="d">공유 링크 열기 → Google 로그인 → 입력창 확인</div><a class="health-link" href="https://gemini.google.com/gem/db70dde72676?usp=sharing" target="_blank" rel="noopener">Gemini Gem 바로가기</a></div></div></section>
+<!-- ===== 10. 주제 선정 ===== -->
+<section class="slide" aria-label="10. 주제 선정"><div class="slide-content"><div class="kicker">한 가지 선택 · 3분</div><h2>주제 선정</h2><div class="card-grid c4"><div class="card"><div class="t">걷기</div><div class="d">일상 속 움직임</div></div><div class="card"><div class="t">수면</div><div class="d">잠들기 전 습관</div></div><div class="card"><div class="t">물 마시기</div><div class="d">하루 수분 습관</div></div><div class="card"><div class="t">스트레칭</div><div class="d">짧은 몸풀기</div></div></div></div></section>
+<!-- ===== 11. 시청자 설정 ===== -->
+<section class="slide" aria-label="11. 시청자 설정"><div class="slide-content"><div class="kicker">누구에게 말할지 · 3분</div><h2>시청자 설정</h2><div class="card-grid c3"><div class="card"><div class="t">대상</div><div class="d">50~60대 건강 관심자</div></div><div class="card"><div class="t">불편</div><div class="d">복잡한 설명·작은 글자</div></div><div class="card good"><div class="t">해결</div><div class="d">쉬운 말·큰 자막·한 가지 행동</div></div></div></div></section>
+<!-- ===== 12. 이야기 구조 ===== -->
+<section class="slide" aria-label="12. 이야기 구조"><div class="slide-content"><div class="kicker">45초 구성 · 3분</div><h2>이야기 구조</h2><div class="card-grid c3"><div class="card"><div class="n">0~5초</div><div class="t">첫 문장</div><div class="d">궁금증과 상황 제시</div></div><div class="card"><div class="n">5~40초</div><div class="t">핵심 습관</div><div class="d">쉬운 설명 3가지</div></div><div class="card"><div class="n">40~45초</div><div class="t">행동 제안</div><div class="d">오늘 할 일 하나</div></div></div></div></section>
+<!-- ===== 13. 건강 스토리 프롬프트 ===== -->
+<section class="slide" aria-label="13. 건강 스토리 프롬프트"><div class="slide-content compact"><div class="kicker">복사해서 사용 · 3분</div><h2>건강 스토리 프롬프트</h2><div class="prompt-card"><div class="label">45초 건강 쇼츠 대본</div><blockquote id="pt-health-story">50~60대가 이해하기 쉬운 건강 쇼츠 대본을 만들어줘. 주제는 [주제]이고 45초 분량으로 시작 문장, 핵심 습관 3가지, 마무리 행동 제안을 포함해줘. 진단이나 치료 효과는 단정하지 말고 확인이 필요한 내용은 표시해줘.</blockquote><button type="button" class="copy-btn" data-copy-target="pt-health-story" aria-label="건강 스토리 프롬프트 복사">복사</button></div></div></section>
+<!-- ===== 14. 실습 1 안내 ===== -->
+<section class="slide" aria-label="14. 실습 1 안내"><div class="slide-content"><div class="kicker">직접 해보기 · 2분</div><h2>실습 1 안내</h2><div class="card-grid c2"><div class="card"><div class="n">1</div><div class="t">주제 변경</div><div class="d">[주제]에 내 건강 습관 입력</div></div><div class="card"><div class="n">2</div><div class="t">결과 생성</div><div class="d">Gemini에 입력 후 대본 확인</div></div></div></div></section>
+<!-- ===== 15. 건강 스토리 생성 ===== -->
+<section class="slide" aria-label="15. 건강 스토리 생성"><div class="slide-content"><div class="kicker">실습 1 · 10분</div><h2>건강 스토리 생성</h2><div class="card-grid c2"><div class="card"><div class="t">수행 과제</div><div class="d">주제 선택 → 프롬프트 수정 → 대본 생성</div></div><div class="card good"><div class="t">완료 기준</div><div class="d">제목·도입·습관 3가지·행동 제안 포함 대본 1개</div></div></div><a class="health-link" href="https://gemini.google.com/gem/db70dde72676?usp=sharing" target="_blank" rel="noopener">Gemini 실습 시작</a></div></section>
+<!-- ===== 16. 결과 점검 ===== -->
+<section class="slide" aria-label="16. 결과 점검"><div class="slide-content compact"><div class="kicker">사람의 확인 · 3분</div><h2>결과 점검</h2><ul class="bullets"><li>쉬운 말: 어려운 용어를 일상 표현으로 변경</li><li>짧은 문장: 한 문장에 정보 하나</li><li>과장 표현: 완치·기적·무조건 삭제</li><li>확인 표시: 근거가 필요한 문장 표시</li></ul></div></section>
+<!-- ===== 17. 대본 다듬기 ===== -->
+<section class="slide" aria-label="17. 대본 다듬기"><div class="slide-content"><div class="kicker">수정 전후 · 3분</div><h2>대본 다듬기</h2><div class="card-grid c2"><div class="card bad"><div class="t">수정 전</div><div class="d">누구에게나 반드시 큰 효과</div></div><div class="card good"><div class="t">수정 후</div><div class="d">개인 상태에 따라 차이가 있으므로 무리하지 않고 실천</div></div></div></div></section>
+<!-- ===== 18. 대본 완성 기준 ===== -->
+<section class="slide" aria-label="18. 대본 완성 기준"><div class="slide-content"><div class="kicker">영상 입력 전 · 2분</div><h2>대본 완성 기준</h2><div class="card-grid c4"><div class="card"><div class="t">길이</div><div class="d">45~60초</div></div><div class="card"><div class="t">문장</div><div class="d">짧고 쉬운 말</div></div><div class="card"><div class="t">행동</div><div class="d">오늘 할 일 하나</div></div><div class="card good"><div class="t">안전</div><div class="d">단정 금지·확인 표시</div></div></div></div></section>
+<!-- ===== 19. 짧은 휴식 ===== -->
+<section class="slide dark" aria-label="19. 짧은 휴식"><div class="slide-content" style="align-items:center;text-align:center"><div class="kicker">눈·손목 스트레칭</div><button type="button" class="break-big" data-minutes="10" title="클릭: 시작·일시정지 · 더블클릭 또는 R: 리셋" aria-label="휴식 타이머 10분"><span class="time">10:00</span></button><p class="lede">다음 준비: Vrew 실행 · 완성 대본 복사</p></div></section>
+<!-- ===== 20. Vrew 접속 ===== -->
+<section class="slide" aria-label="20. Vrew 접속"><div class="slide-content"><div class="kicker">영상 도구 · 2분</div><h2>Vrew 접속</h2><div class="card good"><div class="t">AI 영상 편집</div><div class="d">자동 자막·AI 목소리·텍스트 기반 영상 제작</div><a class="health-link" href="https://vrew.ai/ko/" target="_blank" rel="noopener">Vrew 바로가기</a></div></div></section>
+<!-- ===== 21. 새 영상 시작 ===== -->
+<section class="slide" aria-label="21. 새 영상 시작"><div class="slide-content compact"><div class="kicker">강사 시연 · 3분</div><h2>새 영상 시작</h2><ul class="bullets"><li>시작: 새 프로젝트 또는 텍스트 기반 영상 선택</li><li>화면: 세로형 9:16 비율 확인</li><li>저장: 알아보기 쉬운 프로젝트 이름</li></ul></div></section>
+<!-- ===== 22. 대본 입력 ===== -->
+<section class="slide" aria-label="22. 대본 입력"><div class="slide-content"><div class="kicker">복사와 확인 · 3분</div><h2>대본 입력</h2><div class="card-grid c3"><div class="card"><div class="n">1</div><div class="t">복사</div><div class="d">Gemini 대본 전체 복사</div></div><div class="card"><div class="n">2</div><div class="t">입력</div><div class="d">Vrew 원고 칸에 붙여넣기</div></div><div class="card good"><div class="n">3</div><div class="t">확인</div><div class="d">문장 누락·중복 점검</div></div></div></div></section>
+<!-- ===== 23. 장면 나누기 ===== -->
+<section class="slide" aria-label="23. 장면 나누기"><div class="slide-content"><div class="kicker">한 장면 한 메시지 · 3분</div><h2>장면 나누기</h2><div class="card-grid c2"><div class="card bad"><div class="t">긴 장면</div><div class="d">여러 습관과 설명을 한 화면에 배치</div></div><div class="card good"><div class="t">짧은 장면</div><div class="d">핵심 문장 하나와 맞는 화면 하나</div></div></div></div></section>
+<!-- ===== 24. 화면 자료 선택 ===== -->
+<section class="slide" aria-label="24. 화면 자료 선택"><div class="slide-content"><div class="kicker">주제와 화면 일치 · 3분</div><h2>화면 자료 선택</h2><div class="card-grid c3"><div class="card"><div class="t">관련성</div><div class="d">문장 내용과 맞는 화면</div></div><div class="card"><div class="t">가독성</div><div class="d">자막이 잘 보이는 여백</div></div><div class="card good"><div class="t">안전성</div><div class="d">자극적·오해 가능 화면 제외</div></div></div></div></section>
+<!-- ===== 25. 자막 설정 ===== -->
+<section class="slide" aria-label="25. 자막 설정"><div class="slide-content"><div class="kicker">50~60대 가독성 · 3분</div><h2>자막 설정</h2><div class="card-grid c2"><div class="card good"><div class="t">읽기 쉬운 자막</div><div class="d">큰 글자·짧은 문장·높은 명암·안전 여백</div></div><div class="card bad"><div class="t">읽기 어려운 자막</div><div class="d">작은 글자·여러 줄·낮은 명암·화면 끝 배치</div></div></div></div></section>
+<!-- ===== 26. AI 목소리 설정 ===== -->
+<section class="slide" aria-label="26. AI 목소리 설정"><div class="slide-content compact"><div class="kicker">편안한 듣기 · 3분</div><h2>AI 목소리 설정</h2><ul class="bullets"><li>목소리: 또렷하고 차분한 음색</li><li>속도: 문장을 따라갈 수 있는 보통 속도</li><li>발음: 건강 용어와 숫자 직접 재생 확인</li><li>음량: 배경음보다 설명 음성 우선</li></ul></div></section>
+<!-- ===== 27. 영상 제작 실습 ===== -->
+<section class="slide" aria-label="27. 영상 제작 실습"><div class="slide-content"><div class="kicker">실습 2 · 10분</div><h2>영상 제작 실습</h2><div class="card-grid c2"><div class="card"><div class="t">수행 과제</div><div class="d">대본 입력 → 장면 → 화면 → 자막 → 목소리 → 미리보기</div></div><div class="card good"><div class="t">완료 기준</div><div class="d">30~60초 세로 영상 전체 미리보기 재생</div></div></div><a class="health-link" href="https://vrew.ai/ko/" target="_blank" rel="noopener">Vrew 실습 시작</a></div></section>
+<!-- ===== 28. 완성 영상 점검 ===== -->
+<section class="slide" aria-label="28. 완성 영상 점검"><div class="slide-content compact"><div class="kicker">게시 전 확인 · 2분</div><h2>완성 영상 점검</h2><ul class="bullets"><li>첫 문장: 5초 안에 주제 전달</li><li>자막: 휴대폰에서도 읽기 쉬운 크기</li><li>음성: 발음·속도·음량 확인</li><li>정보: 과장 표현과 확인 필요 문장 점검</li></ul></div></section>
+<!-- ===== 29. 채널 게시 준비 ===== -->
+<section class="slide" aria-label="29. 채널 게시 준비"><div class="slide-content"><div class="kicker">공개 직전 · 2분</div><h2>채널 게시 준비</h2><div class="card-grid c4"><div class="card"><div class="t">제목</div><div class="d">주제와 이득 한 줄</div></div><div class="card"><div class="t">설명</div><div class="d">핵심 내용·주의 문구</div></div><div class="card"><div class="t">썸네일</div><div class="d">큰 글자 3~6단어</div></div><div class="card good"><div class="t">공개 범위</div><div class="d">비공개·일부 공개 먼저</div></div></div></div></section>
+<!-- ===== 30. 핵심 정리와 마침 ===== -->
+<section class="slide title-slide" aria-label="30. 핵심 정리와 마침"><div class="slide-content"><div class="kicker">오늘의 세 단계 · 3분</div><h1>이야기 → 영상 → 게시 준비</h1><p class="lede">Gemini 대본 · Vrew 세로 영상 · 정확성과 가독성 점검</p><div class="meta-row"><span>30장</span><span>100분</span><span>수고하셨습니다</span></div></div></section>
+
+</main>
+
+<div id="progress" aria-hidden="true"></div>
+<nav id="nav" aria-label="슬라이드 이동">
+  <a href="health-shorts.html" target="_blank" rel="noopener" class="hide-sm" aria-label="건강 쇼츠 강의 홈 새 창으로 열기">⌂ 홈</a>
+  <button type="button" id="navPrev" aria-label="이전 슬라이드">◀</button>
+  <span id="counter" aria-live="polite">1 / 30</span>
+  <button type="button" id="navNext" aria-label="다음 슬라이드">▶</button>
+  <span id="modeBadge"></span>
+  <span id="connBadge" class="conn" hidden></span>
+  <span class="grow"></span>
+  <span class="hint hide-sm">← → 이동 · G 전체보기 · P PDF</span>
+  <button type="button" id="lockBtn" hidden>🔒 잠금</button>
+  <button type="button" id="pdfBtn" hidden>PDF 허용</button>
+  <button type="button" id="focusBtn" hidden aria-pressed="false">🤫 집중</button>
+  <button type="button" id="controlBtn" class="control-fab" hidden aria-controls="instructorPanel" aria-expanded="false">⚙ 강사 제어</button>
+  <button type="button" id="gridBtn" aria-haspopup="dialog" aria-controls="gridOverlay">▦ 전체 보기</button>
+  <button type="button" id="printBtn" class="hide-sm">⎙ PDF 저장</button>
+</nav>
+
+<aside class="instructor-panel" id="instructorPanel" hidden aria-label="강사 제어 패널">
+  <div class="instructor-head"><h2>강사 제어</h2><button type="button" id="controlClose" aria-label="강사 제어 닫기">✕</button></div>
+  <div class="instructor-status">
+    <div><small>현재 장</small><strong id="ctlSlide">1 / 21</strong></div>
+    <div><small>청중</small><strong id="ctlViewers">-</strong></div>
+    <div><small>연결</small><strong id="ctlConnection">로컬</strong></div>
+  </div>
+  <div class="instructor-row"><button type="button" id="ctlPrev">◀ 이전</button><button type="button" id="ctlNext" class="primary">다음 ▶</button><input id="ctlJump" type="number" min="1" max="21" value="1" aria-label="이동할 슬라이드 번호"><button type="button" id="ctlGo">이동</button></div>
+  <div class="instructor-row"><button type="button" id="ctlLock">청중 잠금</button><button type="button" id="ctlPdf">PDF 허용</button><button type="button" id="ctlFocus" aria-pressed="false">🤫 집중</button><button type="button" id="ctlFullscreen">전체화면</button></div>
+  <div class="instructor-timer"><strong id="ctlTimer">50:00</strong><div class="instructor-row"><button type="button" id="ctlTimerToggle">시작</button><button type="button" id="ctlTimerReset">초기화</button></div></div>
+  <div class="instructor-row"><a href="slides.html" target="_blank" rel="noopener">청중 화면</a><a href="slides.html?screen" target="_blank" rel="noopener">프로젝션 화면</a><span class="grow"></span><button type="button" id="ctlGrid">전체 보기</button></div>
+  <p class="instructor-note">단축키: C 패널 · ← → 이동 · G 전체 보기 · P PDF · Esc 집중 해제 · Home 표지 · End 마침</p>
+</aside>
+
+<div class="grid-overlay" id="gridOverlay" role="dialog" aria-modal="true" aria-label="전체 슬라이드 보기">
+  <div class="grid-head"><h2>전체 보기</h2><button type="button" id="gridClose">닫기 (Esc)</button></div>
+  <div class="grid-list" id="gridList"></div>
+</div>
+
+<div class="login" id="login" hidden role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form class="login-box" id="loginForm">
+    <h2 id="loginTitle">강사 로그인</h2>
+    <label>이메일<input id="lgEmail" type="email" autocomplete="username" required></label>
+    <label>비밀번호<input id="lgPw" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="lgErr" role="alert"></p>
+    <div class="row"><button type="submit" class="primary">로그인</button><button type="button" id="lgClose">닫기</button></div>
+  </form>
+</div>
+
+<div class="focus-overlay" id="focusOverlay" hidden aria-hidden="true" role="status" aria-live="assertive">
+  <button type="button" class="focus-close" id="focusOverlayClose" hidden>🤫 집중 해제</button>
+  <div class="focus-card">
+    <img src="assets/pinky-shh.png" alt="입 앞에 손가락을 세우고 쉿 자세를 한 핑키">
+    <p class="focus-message">쉿! 잠깐, 선생님 설명에 집중해 주세요.</p>
+  </div>
+</div>
+
+<script src="firebase/firebase-config.js?v=20260930-2"></script>
+<script>window.DECK_ID='health-shorts-1002';</script>
+<script type="module">
+import { isConfigured, createSync } from './firebase/firebase-sync.js';
+
+(function(){
+  var LS = 'healthshorts1002_';
+
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(stage.querySelectorAll(':scope > section.slide'));
+  var total = slides.length;
+  var STORAGE_KEY = LS + 'slide';
+  var idx = 0;
+
+  function lsGet(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, v); } catch (e) { /* 저장 불가 환경 · 무시 */ } }
+
+  /* 시작 위치: ?slide=N 우선, 없으면 마지막으로 본 장 */
+  var params = new URLSearchParams(location.search);
+  var WANT_ADMIN = params.has('admin');
+  var IS_SCREEN = params.has('screen');
+  var IS_VIEW = params.has('view');
+  var qSlide = parseInt(params.get('slide'), 10);
+  if (!isNaN(qSlide) && qSlide >= 1 && qSlide <= total) {
+    idx = qSlide - 1;
+  } else {
+    var saved = parseInt(lsGet(STORAGE_KEY), 10);
+    if (!isNaN(saved) && saved >= 0 && saved < total) idx = saved;
+  }
+
+  var progressEl = document.getElementById('progress');
+  var counterEl = document.getElementById('counter');
+  var navPrev = document.getElementById('navPrev');
+  var navNext = document.getElementById('navNext');
+  var gridOverlay = document.getElementById('gridOverlay');
+  var gridList = document.getElementById('gridList');
+  var minis = [];
+  var lastFocus = null;
+  var LOCKED = true;
+  var PDF_OK = true;
+  var FOCUS_ON = false;
+  var IS_ADMIN = false;
+  var sync = null;
+  var viewers = null;
+  var online = false;
+  var STATE_EMPTY = false;
+  var controlPanel = document.getElementById('instructorPanel');
+
+  function canNav(){ return IS_ADMIN || IS_VIEW || !sync || !LOCKED; }
+  function updateNav(){
+    var ok = canNav();
+    navPrev.disabled = !ok || idx === 0;
+    navNext.disabled = !ok || idx === total - 1;
+    var text = '';
+    var follow = false;
+    if (STATE_EMPTY && !IS_ADMIN) { text = '수업 시작 전 · 강사 화면 대기 중'; follow = true; }
+    else if (IS_ADMIN) text = '관리자';
+    else if (IS_VIEW || !sync) text = '자유 열람';
+    else if (LOCKED) { text = '발표자를 따라가는 중'; follow = true; }
+    else text = '자유 이동';
+    var mode = document.getElementById('modeBadge');
+    mode.textContent = text;
+    mode.classList.toggle('show', !!text);
+    mode.classList.toggle('follow', follow);
+    var lockBtn = document.getElementById('lockBtn');
+    var pdfBtn = document.getElementById('pdfBtn');
+    var focusBtn = document.getElementById('focusBtn');
+    var focusClose = document.getElementById('focusOverlayClose');
+    var controlBtn = document.getElementById('controlBtn');
+    lockBtn.hidden = pdfBtn.hidden = focusBtn.hidden = !IS_ADMIN;
+    controlBtn.hidden = !IS_ADMIN;
+    lockBtn.textContent = LOCKED ? '🔒 잠금 중' : '🔓 자유 이동';
+    lockBtn.setAttribute('aria-pressed', String(LOCKED));
+    pdfBtn.textContent = PDF_OK ? 'PDF 허용 중' : 'PDF 막힘';
+    pdfBtn.setAttribute('aria-pressed', String(PDF_OK));
+    focusBtn.textContent = FOCUS_ON ? '🤫 집중 해제' : '🤫 집중';
+    focusBtn.setAttribute('aria-pressed', String(FOCUS_ON));
+    focusClose.hidden = !(IS_ADMIN && FOCUS_ON);
+    updateControlPanel();
+  }
+
+  function updateControlPanel(){
+    document.getElementById('ctlSlide').textContent = (idx + 1) + ' / ' + total;
+    document.getElementById('ctlViewers').textContent = viewers === null ? '-' : viewers + '명';
+    document.getElementById('ctlConnection').textContent = sync ? (online ? '연결' : '연결 중') : '로컬';
+    document.getElementById('ctlJump').value = idx + 1;
+    document.getElementById('ctlPrev').disabled = idx === 0;
+    document.getElementById('ctlNext').disabled = idx === total - 1;
+    var lock = document.getElementById('ctlLock');
+    var pdf = document.getElementById('ctlPdf');
+    var focus = document.getElementById('ctlFocus');
+    lock.textContent = LOCKED ? '🔒 청중 잠금 중' : '🔓 자유 이동';
+    pdf.textContent = PDF_OK ? 'PDF 허용 중' : 'PDF 차단 중';
+    lock.classList.toggle('policy-on', LOCKED);
+    pdf.classList.toggle('policy-on', PDF_OK);
+    focus.textContent = FOCUS_ON ? '🤫 집중 해제' : '🤫 집중';
+    focus.setAttribute('aria-pressed', String(FOCUS_ON));
+    focus.classList.toggle('policy-on', FOCUS_ON);
+  }
+
+  function toggleControl(force){
+    if (!IS_ADMIN) return;
+    var open = typeof force === 'boolean' ? force : controlPanel.hidden;
+    controlPanel.hidden = !open;
+    document.getElementById('controlBtn').setAttribute('aria-expanded', String(open));
+    if (open) document.getElementById('ctlNext').focus();
+  }
+
+  function commitLock(){
+    if (sync) sync.setLock(!LOCKED).catch(function(){ flash('저장 실패'); });
+    else { LOCKED = !LOCKED; updateNav(); }
+  }
+  function commitPdf(){
+    if (sync) sync.setPdf(!PDF_OK).catch(function(){ flash('저장 실패'); });
+    else { applyPdf(!PDF_OK); updateNav(); }
+  }
+  function applyFocus(on){
+    FOCUS_ON = !!on;
+    var overlay = document.getElementById('focusOverlay');
+    overlay.hidden = !FOCUS_ON;
+    overlay.setAttribute('aria-hidden', String(!FOCUS_ON));
+    overlay.classList.toggle('is-open', FOCUS_ON);
+    updateNav();
+  }
+  function commitFocus(){
+    if (!IS_ADMIN) return;
+    if (sync) sync.setFocus(!FOCUS_ON).catch(function(){ flash('집중 상태 저장 실패'); });
+    else applyFocus(!FOCUS_ON);
+  }
+
+  function show(i){
+    idx = Math.max(0, Math.min(total - 1, i));
+    slides.forEach(function(s, n){
+      s.classList.toggle('active', n === idx);
+      s.setAttribute('aria-hidden', n === idx ? 'false' : 'true');
+    });
+    progressEl.style.width = ((idx + 1) / total * 100) + '%';
+    counterEl.textContent = (idx + 1) + ' / ' + total;
+    minis.forEach(function(m, n){ m.classList.toggle('current', n === idx); });
+    lsSet(STORAGE_KEY, String(idx));
+    updateNav();
+  }
+  function navigate(i){
+    if (!canNav()) return;
+    show(i);
+    if (IS_ADMIN && sync) sync.setSlide(idx).catch(function(){ flash('저장 실패 · 관리자 권한 확인'); });
+  }
+  function applyPdf(ok){
+    PDF_OK = !!ok;
+    document.getElementById('printBtn').style.display = PDF_OK ? '' : 'none';
+    document.documentElement.classList.toggle('no-pdf', !PDF_OK);
+    document.querySelector('#nav .hint').textContent = PDF_OK ? '← → 이동 · G 전체보기 · P PDF' : '← → 이동 · G 전체보기';
+  }
+  function flash(msg){
+    var badge = document.getElementById('connBadge');
+    badge.hidden = false;
+    badge.textContent = msg;
+  }
+
+  function scaleMinis(){
+    minis.forEach(function(m){ m.firstChild.style.transform = 'scale(' + (m.clientWidth / 960) + ')'; });
+  }
+  window.addEventListener('resize', function(){ if (gridOverlay.classList.contains('open')) scaleMinis(); });
+  function openGrid(){
+    lastFocus = document.activeElement;
+    gridOverlay.classList.add('open');
+    scaleMinis();
+    var c = minis[idx];
+    if (c) { c.scrollIntoView({block:'center'}); c.focus(); }
+  }
+  function closeGrid(){
+    gridOverlay.classList.remove('open');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  /* Firebase 설정 전에는 기존 자유 열람, 설정 뒤에는 강사·청중 동기화 */
+  if (!isConfigured(window.FIREBASE_CONFIG)) {
+    document.getElementById('fbBanner').hidden = false;
+    if (WANT_ADMIN) IS_ADMIN = true;
+    updateNav();
+  } else if (!IS_VIEW) {
+    sync = createSync(window.FIREBASE_CONFIG, window.DECK_ID || 'health-shorts-1002');
+    var lastState = null;
+    var viewersOn = false;
+    function renderConnection(){
+      var badge = document.getElementById('connBadge');
+      if (!(IS_ADMIN || IS_SCREEN)) {
+        badge.hidden = online;
+        badge.textContent = '연결 끊김 · 재연결 중';
+        return;
+      }
+      badge.hidden = false;
+      badge.textContent = (online ? '● 연결' : '○ 끊김') + (viewers !== null ? ' · 접속 ' + viewers + '명' : '');
+      updateControlPanel();
+    }
+    sync.onState(function(state){
+      if (!state) { flash('상태 읽기 실패 · 규칙 확인'); return; }
+      STATE_EMPTY = !!state.isEmpty;
+      lastState = state;
+      LOCKED = !!state.locked;
+      applyPdf(state.pdf);
+      applyFocus(state.focus);
+      if (!IS_ADMIN && (IS_SCREEN || LOCKED)) show(state.slide | 0);
+      else updateNav();
+    });
+    sync.onConnection(function(on){ online = on; renderConnection(); });
+    if (!IS_SCREEN && !WANT_ADMIN) sync.joinViewers();
+    sync.onAdmin(function(admin, user){
+      IS_ADMIN = admin;
+      if (admin) {
+        document.getElementById('login').hidden = true;
+        if (lastState) show(lastState.slide | 0);
+        if (!viewersOn) {
+          viewersOn = true;
+          sync.onViewers(function(n){ viewers = n; renderConnection(); });
+        }
+      } else if (WANT_ADMIN && user) {
+        document.getElementById('lgErr').textContent = '강사 목록(admins)에 없는 계정';
+        document.getElementById('login').hidden = false;
+      }
+      renderConnection();
+      updateNav();
+    });
+    if (WANT_ADMIN) {
+      setTimeout(function(){
+        if (!IS_ADMIN) {
+          document.getElementById('login').hidden = false;
+          document.getElementById('lgEmail').focus();
+        }
+      }, 900);
+    }
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      document.getElementById('lgErr').textContent = '';
+      sync.login(document.getElementById('lgEmail').value.trim(), document.getElementById('lgPw').value).catch(function(){
+        document.getElementById('lgErr').textContent = '로그인 실패 · 이메일·비밀번호 확인';
+      });
+    });
+    document.getElementById('lgClose').addEventListener('click', function(){ document.getElementById('login').hidden = true; });
+  }
+
+  document.getElementById('lockBtn').addEventListener('click', commitLock);
+  document.getElementById('pdfBtn').addEventListener('click', commitPdf);
+  document.getElementById('focusBtn').addEventListener('click', commitFocus);
+  document.getElementById('focusOverlayClose').addEventListener('click', commitFocus);
+  document.getElementById('controlBtn').addEventListener('click', function(){ toggleControl(); });
+  document.getElementById('controlClose').addEventListener('click', function(){ toggleControl(false); });
+  document.getElementById('ctlPrev').addEventListener('click', function(){ navigate(idx - 1); });
+  document.getElementById('ctlNext').addEventListener('click', function(){ navigate(idx + 1); });
+  document.getElementById('ctlGo').addEventListener('click', function(){ navigate((parseInt(document.getElementById('ctlJump').value, 10) || 1) - 1); });
+  document.getElementById('ctlJump').addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('ctlGo').click(); });
+  document.getElementById('ctlLock').addEventListener('click', commitLock);
+  document.getElementById('ctlPdf').addEventListener('click', commitPdf);
+  document.getElementById('ctlFocus').addEventListener('click', commitFocus);
+  document.getElementById('ctlFullscreen').addEventListener('click', function(){ if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){}); else document.exitFullscreen(); });
+  document.getElementById('ctlGrid').addEventListener('click', function(){ toggleControl(false); openGrid(); });
+
+  var ctlTimerSeconds = 100 * 60;
+  var ctlTimerRunning = false;
+  var ctlTimerId = null;
+  function renderCtlTimer(){ var m=Math.floor(ctlTimerSeconds/60),s=ctlTimerSeconds%60;document.getElementById('ctlTimer').textContent=m+':'+(s<10?'0':'')+s;document.getElementById('ctlTimerToggle').textContent=ctlTimerRunning?'일시정지':'시작'; }
+  document.getElementById('ctlTimerToggle').addEventListener('click', function(){ctlTimerRunning=!ctlTimerRunning;if(ctlTimerRunning&&!ctlTimerId)ctlTimerId=setInterval(function(){if(ctlTimerSeconds>0){ctlTimerSeconds--;renderCtlTimer();}else{ctlTimerRunning=false;clearInterval(ctlTimerId);ctlTimerId=null;renderCtlTimer();flash('수업 타이머 종료');}},1000);renderCtlTimer();});
+  document.getElementById('ctlTimerReset').addEventListener('click', function(){ctlTimerRunning=false;if(ctlTimerId){clearInterval(ctlTimerId);ctlTimerId=null;}ctlTimerSeconds=100*60;renderCtlTimer();});
+  renderCtlTimer();
+
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    /* 로그인 입력 중에는 키보드 이동 중지 · 그 외 방향키는 포커스 위치와 무관하게 최우선 */
+    if (t && t.closest && t.closest('.login:not([hidden]) input')) return;
+    if (FOCUS_ON && IS_ADMIN && e.key === 'Escape') { e.preventDefault(); commitFocus(); return; }
+    if (gridOverlay.classList.contains('open')) {
+      if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') { closeGrid(); }
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); navigate(idx + 1); return; }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); navigate(idx - 1); return; }
+    if (t && t.closest && t.closest('input, textarea, select')) return;
+    /* 버튼에 포커스가 있을 때 스페이스·엔터는 버튼 동작에 양보 */
+    var onButton = t && t.closest && t.closest('button, a');
+    if ((e.key === ' ' || e.key === 'Enter') && onButton) return;
+    if (e.key === ' ') { e.preventDefault(); navigate(idx + 1); }
+    else if (e.key === 'g' || e.key === 'G' || e.key === 'ㅎ') { openGrid(); }
+    else if (e.key === 'p' || e.key === 'P' || e.key === 'ㅔ') { e.preventDefault(); if (PDF_OK) window.print(); }
+    else if (e.key === 'Home') { navigate(0); }
+    else if (e.key === 'End') { navigate(total - 1); }
+    else if ((e.key === 'c' || e.key === 'C' || e.key === 'ㅊ') && IS_ADMIN) { toggleControl(); }
+  });
+
+  /* 무대 클릭: 오른쪽 절반 다음 · 왼쪽 절반 이전 (버튼·링크·프롬프트 카드 제외) */
+  stage.addEventListener('click', function(e){
+    if (e.target.closest('button, a, .prompt-card')) return;
+    var rect = stage.getBoundingClientRect();
+    if (e.clientX - rect.left > rect.width / 2) navigate(idx + 1); else navigate(idx - 1);
+  });
+  navPrev.addEventListener('click', function(){ navigate(idx - 1); });
+  navNext.addEventListener('click', function(){ navigate(idx + 1); });
+  document.getElementById('gridBtn').addEventListener('click', openGrid);
+  document.getElementById('gridClose').addEventListener('click', closeGrid);
+  document.getElementById('printBtn').addEventListener('click', function(){ if (PDF_OK) window.print(); });
+
+  /* 타이머: 벽시계 기준 (탭이 뒤로 가도 시간이 밀리지 않음) */
+  function initTimer(el){
+    var totalSec = parseInt(el.dataset.minutes, 10) * 60;
+    var remaining = totalSec;
+    var endAt = null;
+    var running = false;
+    var tickId = null;
+    var timeEl = el.querySelector('.time');
+    var stateEl = el.querySelector('.state');
+
+    function currentRemaining(){
+      if (!running) return remaining;
+      return Math.round((endAt - Date.now()) / 1000);
+    }
+    function format(sec){
+      var neg = sec < 0, abs = Math.abs(sec);
+      var m = Math.floor(abs / 60), s = abs % 60;
+      return (neg ? '+' : '') + m + ':' + (s < 10 ? '0' + s : s);
+    }
+    function render(){
+      var sec = currentRemaining();
+      timeEl.textContent = format(sec);
+      el.classList.toggle('warn', sec <= 60);
+      if (stateEl) stateEl.textContent = running ? '진행' : '정지';
+    }
+    function start(){
+      if (running) return;
+      running = true;
+      endAt = Date.now() + remaining * 1000;
+      el.classList.add('running');
+      tickId = setInterval(render, 250);
+      render();
+    }
+    function pause(){
+      if (running) remaining = currentRemaining();
+      running = false;
+      el.classList.remove('running');
+      clearInterval(tickId);
+      render();
+    }
+    function reset(){
+      running = false;
+      clearInterval(tickId);
+      remaining = totalSec;
+      el.classList.remove('running');
+      render();
+    }
+    el.addEventListener('click', function(){ if (running) pause(); else start(); });
+    el.addEventListener('dblclick', function(e){ e.stopPropagation(); reset(); });
+    el.addEventListener('keydown', function(e){ if (e.key === 'r' || e.key === 'R' || e.key === 'ㄱ') { e.preventDefault(); reset(); } });
+    render();
+  }
+  stage.querySelectorAll('.timer-chip, .break-big[data-minutes]').forEach(initTimer);
+
+  /* 복사 버튼: clipboard API가 700ms 안에 끝나지 않으면 textarea 폴백 · 완료 표시는 한 번만 */
+  stage.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var target = document.getElementById(btn.dataset.copyTarget);
+      var text = target ? target.textContent : '';
+      var settled = false;
+      function done(){
+        if (settled) return;
+        settled = true;
+        btn.textContent = '복사됨 ✓';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = '복사'; btn.classList.remove('copied'); }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        setTimeout(function(){ if (!settled) fallbackCopy(text, done); }, 700);
+        navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+  function fallbackCopy(text, done){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* 구형 브라우저 · 무시 */ }
+    document.body.removeChild(ta);
+    done();
+  }
+
+  /* 전체보기 축소판: 타이머·복사 핸들러를 붙인 뒤 마지막에 생성 · 복제본은 inert로 포커스 제외 */
+  slides.forEach(function(s, n){
+    var mini = document.createElement('div');
+    mini.className = 'mini';
+    mini.tabIndex = 0;
+    mini.setAttribute('role', 'button');
+    mini.setAttribute('aria-label', (s.getAttribute('aria-label') || String(n + 1)) + ' 슬라이드로 이동');
+    var copy = document.createElement('div');
+    copy.className = s.className.replace(/\bactive\b/, '').trim();
+    copy.setAttribute('aria-hidden', 'true');
+    copy.setAttribute('inert', '');
+    copy.innerHTML = s.innerHTML;
+    copy.querySelectorAll('[id]').forEach(function(el){ el.removeAttribute('id'); });
+    var num = document.createElement('span');
+    num.className = 'mini-num';
+    num.setAttribute('aria-hidden', 'true');
+    num.textContent = n + 1;
+    var inner = document.createElement('div');
+    inner.className = 'mini-inner';
+    inner.appendChild(copy);
+    mini.appendChild(inner);
+    mini.appendChild(num);
+    mini.addEventListener('click', function(){ navigate(n); closeGrid(); });
+    mini.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(n); closeGrid(); } });
+    gridList.appendChild(mini);
+    minis.push(mini);
+  });
+  show(idx);
+})();
+</script>
+</body>
+</html>
